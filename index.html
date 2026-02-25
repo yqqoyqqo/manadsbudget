@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Månadsbudget</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1e293b" />
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Budget" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --border: #e2e6ea;
+      --text: #1a1d23;
+      --muted: #6b7280;
+      --income-color: #16a34a;
+      --income-light: #f0fdf4;
+      --income-border: #bbf7d0;
+      --fixed-color: #dc2626;
+      --fixed-light: #fef2f2;
+      --fixed-border: #fecaca;
+      --variable-color: #d97706;
+      --variable-light: #fffbeb;
+      --variable-border: #fde68a;
+      --saving-color: #7c3aed;
+      --saving-light: #f5f3ff;
+      --saving-border: #ddd6fe;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header p.sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+
+    .app-grid {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.full {
+      grid-column: 1 / -1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .card-header .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .card-header h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* Income */
+    .income .card-header .dot {
+      background: var(--income-color);
+    }
+
+    .income {
+      border-color: var(--income-border);
+      background: var(--income-light);
+    }
+
+    .income .total-row {
+      color: var(--income-color);
+    }
+
+    .income .add-btn {
+      background: var(--income-color);
+    }
+
+    /* Fixed */
+    .fixed .card-header .dot {
+      background: var(--fixed-color);
+    }
+
+    .fixed {
+      border-color: var(--fixed-border);
+      background: var(--fixed-light);
+    }
+
+    .fixed .total-row {
+      color: var(--fixed-color);
+    }
+
+    .fixed .add-btn {
+      background: var(--fixed-color);
+    }
+
+    /* Variable */
+    .variable .card-header .dot {
+      background: var(--variable-color);
+    }
+
+    .variable {
+      border-color: var(--variable-border);
+      background: var(--variable-light);
+    }
+
+    .variable .total-row {
+      color: var(--variable-color);
+    }
+
+    .variable .add-btn {
+      background: var(--variable-color);
+    }
+
+    /* Saving */
+    .saving {
+      border-color: var(--saving-border);
+      background: var(--saving-light);
+    }
+
+    .saving .card-header .dot {
+      background: var(--saving-color);
+    }
+
+    .saving .total-row {
+      color: var(--saving-color);
+    }
+
+    .saving .add-btn {
+      background: var(--saving-color);
+    }
+
+    /* Row inputs */
+    .row-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .entry-row {
+      display: grid;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .entry-row.normal {
+      grid-template-columns: 1fr 110px 30px;
+    }
+
+    .entry-row.saving-row {
+      grid-template-columns: 1fr 90px 90px 30px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 9px;
+      font-size: 0.85rem;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #94a3b8;
+    }
+
+    input[type="number"] {
+      text-align: right;
+    }
+
+    .del-btn {
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .del-btn:hover {
+      background: #fecaca;
+      color: var(--fixed-color);
+    }
+
+    .add-btn {
+      margin-top: 10px;
+      border: none;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      opacity: 0.9;
+      transition: opacity 0.15s;
+    }
+
+    .add-btn:hover {
+      opacity: 1;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding-top: 10px;
+      margin-top: 8px;
+      border-top: 1.5px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* Result */
+    .result-card {
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    .result-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-amount {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .result-amount.positive {
+      color: var(--income-color);
+    }
+
+    .result-amount.negative {
+      color: var(--fixed-color);
+    }
+
+    .result-breakdown {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .breakdown-item {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .breakdown-item span {
+      display: block;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    /* Savings warning */
+    .saving-warning {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .saving-warning.over {
+      background: #fef2f2;
+      color: var(--fixed-color);
+      border: 1px solid var(--fixed-border);
+      display: block;
+    }
+
+    .saving-unallocated {
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .saving-unallocated strong {
+      color: var(--saving-color);
+    }
+
+    /* Saving calc display */
+    .saving-calc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: right;
+      padding: 0 2px;
+    }
+
+    /* Export / action buttons */
+    .export-area {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 4px 0 16px;
+      flex-wrap: wrap;
+    }
+
+    .export-btn {
+      background: #1e293b;
+      color: #fff;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .export-btn:hover {
+      background: #0f172a;
+    }
+
+    .newmonth-btn {
+      background: #0369a1;
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .newmonth-btn:hover {
+      background: #075985;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* New month modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      display: none;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      text-align: center;
+    }
+
+    .modal-box h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .modal-box p {
+      font-size: 0.88rem;
+      color: #6b7280;
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .modal-cancel {
+      padding: 9px 22px;
+      border: 1.5px solid #e2e6ea;
+      border-radius: 7px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #374151;
+      transition: background 0.15s;
+    }
+
+    .modal-cancel:hover {
+      background: #f3f4f6;
+    }
+
+    .modal-confirm {
+      padding: 9px 22px;
+      border: none;
+      border-radius: 7px;
+      background: #0369a1;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .modal-confirm:hover {
+      background: #075985;
+    }
+
+    /* ---- Hidden export canvas template ---- */
+    #export-template {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      width: 680px;
+      background: #ffffff;
+      padding: 40px 48px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #1a1d23;
+    }
+
+    #export-template h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    #export-template .exp-date {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+
+    #export-template .exp-section {
+      margin-bottom: 22px;
+    }
+
+    #export-template .exp-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    #export-template .exp-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding: 5px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    #export-template .exp-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding-top: 8px;
+      margin-top: 4px;
+      border-top: 2px solid #e2e6ea;
+    }
+
+    #export-template .exp-result {
+      border-top: 2px solid #e2e6ea;
+      margin-top: 20px;
+      padding-top: 20px;
+      text-align: center;
+    }
+
+    #export-template .exp-result-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    #export-template .exp-result-amount {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+    }
+
+    #export-template .exp-result-amount.positive {
+      color: #16a34a;
+    }
+
+    #export-template .exp-result-amount.negative {
+      color: #dc2626;
+    }
+
+    #export-template .exp-saving-section {
+      margin-top: 22px;
+    }
+
+    #export-template .exp-saving-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .section-saving-calc {
+      display: grid;
+      grid-template-columns: 1fr auto auto 30px;
+      gap: 6px;
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card.full {
+        grid-column: 1;
+      }
+
+      .export-area {
+        grid-column: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>📊 Månadsbudget</h1>
+    <p class="sub" id="header-date"></p>
+  </header>
+
+  <div class="app-grid">
+
+    <!-- INCOME -->
+    <div class="card income" id="income-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🟢 Inkomster</h2>
+      </div>
+      <div class="row-list" id="income-list"></div>
+      <button class="add-btn" onclick="addRow('income')">+ Lägg till inkomst</button>
+      <div class="total-row">
+        <span>Total inkomst</span>
+        <span id="income-total">0 kr</span>
+      </div>
+    </div>
+
+    <!-- FIXED EXPENSES -->
+    <div class="card fixed" id="fixed-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🔴 Fasta utgifter</h2>
+      </div>
+      <div class="row-list" id="fixed-list"></div>
+      <button class="add-btn" onclick="addRow('fixed')">+ Lägg till fast utgift</button>
+      <div class="total-row">
+        <span>Total fasta</span>
+        <span id="fixed-total">0 kr</span>
+      </div>
+    </div>
+
+    <!-- VARIABLE EXPENSES -->
+    <div class="card variable" id="variable-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🟠 Rörliga utgifter</h2>
+      </div>
+      <div class="row-list" id="variable-list"></div>
+      <button class="add-btn" onclick="addRow('variable')">+ Lägg till rörlig utgift</button>
+      <div class="total-row">
+        <span>Total rörliga</span>
+        <span id="variable-total">0 kr</span>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card result-card full">
+      <div class="result-label">🟣 Kvar att fördela</div>
+      <div class="result-amount" id="result-amount">0 kr</div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">Inkomst<span id="bd-income">0 kr</span></div>
+        <div class="breakdown-item">− Fasta<span id="bd-fixed">0 kr</span></div>
+        <div class="breakdown-item">− Rörliga<span id="bd-variable">0 kr</span></div>
+      </div>
+    </div>
+
+    <!-- SAVINGS -->
+    <div class="card saving full" id="saving-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🔵 Sparande</h2>
+      </div>
+      <div class="row-list" id="saving-list"></div>
+      <button class="add-btn" onclick="addSavingRow()">+ Lägg till sparmål</button>
+      <div class="total-row">
+        <span>Totalt sparande</span>
+        <span id="saving-total">0 kr</span>
+      </div>
+      <div class="saving-unallocated" id="saving-unallocated"></div>
+      <div class="saving-warning" id="saving-warning">⚠️ Du överskrider tillgängligt belopp!</div>
+    </div>
+
+    <!-- EXPORT / NEW MONTH -->
+    <div class="export-area full">
+      <button class="newmonth-btn" onclick="openNewMonthModal()">📅 Ny månad</button>
+      <button class="export-btn" onclick="exportImage()">📸 Spara som bild</button>
+    </div>
+
+  </div>
+
+  <!-- Hidden export template -->
+  <div id="export-template">
+    <h1>Månadsbudget – Sammanfattning</h1>
+    <div class="exp-date" id="exp-date-text"></div>
+
+    <div class="exp-section">
+      <h2>Inkomster</h2>
+      <div id="exp-income-rows"></div>
+      <div class="exp-total">
+        <span>Total inkomst</span>
+        <span id="exp-income-total"></span>
+      </div>
+    </div>
+
+    <div class="exp-section">
+      <h2>Fasta utgifter</h2>
+      <div id="exp-fixed-rows"></div>
+      <div class="exp-total">
+        <span>Total fasta</span>
+        <span id="exp-fixed-total"></span>
+      </div>
+    </div>
+
+    <div class="exp-section">
+      <h2>Rörliga utgifter</h2>
+      <div id="exp-variable-rows"></div>
+      <div class="exp-total">
+        <span>Total rörliga</span>
+        <span id="exp-variable-total"></span>
+      </div>
+    </div>
+
+    <div class="exp-result">
+      <div class="exp-result-label">KVAR ATT FÖRDELA</div>
+      <div class="exp-result-amount" id="exp-result-amount"></div>
+    </div>
+
+    <div class="exp-saving-section" id="exp-saving-section">
+      <h2>Sparande</h2>
+      <div id="exp-saving-rows"></div>
+      <div class="exp-total">
+        <span>Totalt sparande</span>
+        <span id="exp-saving-total"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- New month confirmation modal -->
+  <div class="modal-overlay" id="newmonth-modal">
+    <div class="modal-box">
+      <h3>📅 Starta ny månad?</h3>
+      <p>Inkomster, rörliga utgifter och sparande nollställs.<br>
+        <strong>Fasta utgifter behålls.</strong>
+      </p>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeNewMonthModal()">Avbryt</button>
+        <button class="modal-confirm" onclick="confirmNewMonth()">Starta ny månad</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────────
+    let state = {
+      income: [],
+      fixed: [],
+      variable: [],
+      saving: []
+    };
+    let nextId = 1;
+
+    // ── Init ───────────────────────────────────────────────────────
+    function init() {
+      updateDateDisplay();
+      if (!loadState()) {
+        // First launch – pre-fill example rows
+        addRow('income', { name: 'Lön', amount: 35000 });
+        addRow('fixed', { name: 'Hyra', amount: 9500 });
+        addRow('fixed', { name: 'Hemförsäkring', amount: 250 });
+        addRow('variable', { name: 'Mat', amount: 3500 });
+        addRow('variable', { name: 'Nöje', amount: 1000 });
+        addSavingRow({ name: 'Buffert', type: 'percent', value: 10 });
+      }
+    }
+
+    function updateDateDisplay() {
+      const now = new Date();
+      document.getElementById('header-date').textContent =
+        now.toLocaleDateString('sv-SE', { year: 'numeric', month: 'long' });
+      document.getElementById('exp-date-text').textContent =
+        now.toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // ── localStorage persistence ───────────────────────────────────
+    const STORAGE_KEY = 'manadsbudget_v1';
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, nextId }));
+      } catch (e) { }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        state = saved.state;
+        nextId = saved.nextId || 1;
+        ['income', 'fixed', 'variable'].forEach(s => renderSection(s));
+        renderSaving();
+        recalc();
+        return true;
+      } catch (e) { return false; }
+    }
+
+    // ── New month ─────────────────────────────────────────────────
+    function openNewMonthModal() { document.getElementById('newmonth-modal').classList.add('open'); }
+    function closeNewMonthModal() { document.getElementById('newmonth-modal').classList.remove('open'); }
+
+    function confirmNewMonth() {
+      closeNewMonthModal();
+      // Keep fixed, clear the rest
+      state.income = [];
+      state.variable = [];
+      state.saving = [];
+      // Reset IDs for fixed so they keep working
+      state.fixed = state.fixed.map(r => ({ ...r }));
+      ['income', 'variable'].forEach(s => renderSection(s));
+      renderSaving();
+      recalc();
+      saveState();
+      updateDateDisplay();
+      showToast('✅ Ny månad startad – fasta utgifter behållna!');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────
+    function fmt(n) {
+      return new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(n);
+    }
+    function sumSection(arr) {
+      return arr.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+    }
+
+    // ── Add rows ───────────────────────────────────────────────────
+    function addRow(section, prefill = {}) {
+      const id = nextId++;
+      const item = { id, name: prefill.name || '', amount: prefill.amount || '' };
+      state[section].push(item);
+      renderSection(section);
+      recalc();
+      saveState();
+    }
+    function addSavingRow(prefill = {}) {
+      const id = nextId++;
+      const item = { id, name: prefill.name || '', type: prefill.type || 'percent', value: prefill.value || '' };
+      state.saving.push(item);
+      renderSaving();
+      recalc();
+      saveState();
+    }
+
+    // ── Remove rows ────────────────────────────────────────────────
+    function removeRow(section, id) {
+      state[section] = state[section].filter(r => r.id !== id);
+      if (section === 'saving') { renderSaving(); } else { renderSection(section); }
+      recalc();
+      saveState();
+    }
+
+    // ── Render sections ────────────────────────────────────────────
+    function renderSection(section) {
+      const list = document.getElementById(section + '-list');
+      list.innerHTML = '';
+      state[section].forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'entry-row normal';
+        row.innerHTML = `
+        <input type="text" placeholder="Namn" value="${escH(item.name)}"
+          oninput="updateField('${section}', ${item.id}, 'name', this.value)" />
+        <input type="number" placeholder="0" min="0" value="${item.amount}"
+          oninput="updateField('${section}', ${item.id}, 'amount', this.value)" />
+        <button class="del-btn" onclick="removeRow('${section}', ${item.id})">✕</button>
+      `;
+        list.appendChild(row);
+      });
+    }
+
+    function renderSaving() {
+      const list = document.getElementById('saving-list');
+      list.innerHTML = '';
+      const available = getAvailable();
+      state.saving.forEach(item => {
+        const calculated = calcSaving(item, available);
+        const row = document.createElement('div');
+        row.className = 'entry-row saving-row';
+        row.innerHTML = `
+        <input type="text" placeholder="Sparmål" value="${escH(item.name)}"
+          oninput="updateField('saving', ${item.id}, 'name', this.value)" />
+        <select onchange="updateField('saving', ${item.id}, 'type', this.value)">
+          <option value="percent" ${item.type === 'percent' ? 'selected' : ''}>%</option>
+          <option value="fixed"   ${item.type === 'fixed' ? 'selected' : ''}>kr</option>
+        </select>
+        <input type="number" placeholder="0" min="0" value="${item.value}"
+          oninput="updateField('saving', ${item.id}, 'value', this.value)" />
+        <button class="del-btn" onclick="removeRow('saving', ${item.id})">✕</button>
+      `;
+        // calc display
+        const calc = document.createElement('div');
+        calc.className = 'saving-calc';
+        if (available > 0 && (parseFloat(item.value) || 0) > 0) {
+          calc.textContent = '= ' + fmt(calculated);
+        }
+        list.appendChild(row);
+        list.appendChild(calc);
+      });
+    }
+
+    function updateField(section, id, field, value) {
+      const item = state[section].find(r => r.id === id);
+      if (item) item[field] = value;
+      if (section === 'saving') { renderSaving(); }
+      recalc();
+      saveState();
+    }
+
+    function escH(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ── Calculations ───────────────────────────────────────────────
+    function getAvailable() {
+      return sumSection(state.income) - sumSection(state.fixed) - sumSection(state.variable);
+    }
+
+    function calcSaving(item, available) {
+      const v = parseFloat(item.value) || 0;
+      if (item.type === 'percent') return Math.max(0, available) * v / 100;
+      return v;
+    }
+
+    function recalc() {
+      const income = sumSection(state.income);
+      const fixed = sumSection(state.fixed);
+      const variable = sumSection(state.variable);
+      const available = income - fixed - variable;
+      const available_pos = Math.max(0, available);
+
+      // Section totals
+      document.getElementById('income-total').textContent = fmt(income);
+      document.getElementById('fixed-total').textContent = fmt(fixed);
+      document.getElementById('variable-total').textContent = fmt(variable);
+
+      // Result
+      const resEl = document.getElementById('result-amount');
+      resEl.textContent = fmt(available);
+      resEl.className = 'result-amount ' + (available >= 0 ? 'positive' : 'negative');
+
+      document.getElementById('bd-income').textContent = fmt(income);
+      document.getElementById('bd-fixed').textContent = fmt(fixed);
+      document.getElementById('bd-variable').textContent = fmt(variable);
+
+      // Savings
+      let savingTotal = 0;
+      state.saving.forEach(item => {
+        savingTotal += calcSaving(item, available_pos);
+      });
+      document.getElementById('saving-total').textContent = fmt(savingTotal);
+
+      const unalloc = available_pos - savingTotal;
+      const unallocEl = document.getElementById('saving-unallocated');
+      const warnEl = document.getElementById('saving-warning');
+
+      if (available_pos > 0) {
+        unallocEl.innerHTML = `Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong>`;
+      } else {
+        unallocEl.innerHTML = '';
+      }
+
+      if (savingTotal > available_pos && available_pos > 0) {
+        warnEl.classList.add('over');
+      } else {
+        warnEl.classList.remove('over');
+      }
+
+      // Re-render saving rows to update calc display
+      renderSaving();
+    }
+
+    // ── Export as PNG ──────────────────────────────────────────────
+    async function exportImage() {
+      const available = getAvailable();
+      const available_pos = Math.max(0, available);
+
+      // Populate export template
+      fillExpRows('exp-income-rows', state.income);
+      fillExpRows('exp-fixed-rows', state.fixed);
+      fillExpRows('exp-variable-rows', state.variable);
+
+      document.getElementById('exp-income-total').textContent = fmt(sumSection(state.income));
+      document.getElementById('exp-fixed-total').textContent = fmt(sumSection(state.fixed));
+      document.getElementById('exp-variable-total').textContent = fmt(sumSection(state.variable));
+
+      const resEl = document.getElementById('exp-result-amount');
+      resEl.textContent = fmt(available);
+      resEl.className = 'exp-result-amount ' + (available >= 0 ? 'positive' : 'negative');
+
+      // Savings
+      const savRows = document.getElementById('exp-saving-rows');
+      savRows.innerHTML = '';
+      let savTotal = 0;
+      state.saving.forEach(item => {
+        const calc = calcSaving(item, available_pos);
+        savTotal += calc;
+        const row = document.createElement('div');
+        row.className = 'exp-row';
+        const typeLabel = item.type === 'percent' ? `${item.value}%` : '';
+        row.innerHTML = `<span>${escH(item.name)} ${typeLabel}</span><span>${fmt(calc)}</span>`;
+        savRows.appendChild(row);
+      });
+      document.getElementById('exp-saving-total').textContent = fmt(savTotal);
+
+      const tpl = document.getElementById('export-template');
+      tpl.style.left = '-9999px';
+
+      const canvas = await html2canvas(tpl, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      });
+
+      const link = document.createElement('a');
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      link.download = `manadsbudget-${dateStr}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function fillExpRows(containerId, arr) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      arr.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'exp-row';
+        row.innerHTML = `<span>${escH(item.name) || '–'}</span><span>${fmt(parseFloat(item.amount) || 0)}</span>`;
+        el.appendChild(row);
+      });
+      if (arr.length === 0) {
+        el.innerHTML = '<div class="exp-row" style="color:#9ca3af"><span>–</span><span>0 kr</span></div>';
+      }
+    }
+
+    init();
+
+    // ── Service Worker registration ────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => { });
+      });
+    }
+  </script>
+</body>
+
+</html>
