@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import re
+
+html_content = """<!DOCTYPE html>
 <html lang="sv">
 
 <head>
@@ -992,3 +994,7 @@
 </script>
 </body>
 </html>
+"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)

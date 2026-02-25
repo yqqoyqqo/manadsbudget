@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manadsbudget-v1';
+const CACHE_NAME = 'manadsbudget-v3';
 const ASSETS = [
   './',
   './index.html',
