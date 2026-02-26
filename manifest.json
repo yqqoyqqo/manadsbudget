@@ -1,6 +1,6 @@
 {
   "name": "Månadsbudget",
-  "short_name": "Budget",
+  "short_name": "Månadsbudget",
   "description": "Enkel och snabb månadsbudget",
   "start_url": "./index.html",
   "display": "standalone",
