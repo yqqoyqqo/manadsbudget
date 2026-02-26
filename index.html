@@ -600,6 +600,93 @@
       letter-spacing: 0.03em;
     }
 
+    /* Face ID Lock Screen */
+    #lock-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 40px 24px;
+      padding-top: calc(env(safe-area-inset-top) + 40px);
+    }
+
+    #lock-screen.visible {
+      display: flex;
+    }
+
+    .lock-icon {
+      font-size: 4rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 0.8;
+      }
+    }
+
+    .lock-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      text-align: center;
+    }
+
+    .lock-sub {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .faceid-btn {
+      background: #0369a1;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px 36px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+
+    .faceid-btn:active {
+      transform: scale(0.97);
+    }
+
+    .faceid-btn:hover {
+      background: #075985;
+    }
+
+    .lock-fallback {
+      font-size: 0.82rem;
+      color: #64748b;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 8px;
+    }
+
+    .lock-fallback:hover {
+      color: #94a3b8;
+    }
+
     /* Modals */
     .modal-overlay {
       position: fixed;
@@ -1079,6 +1166,17 @@
     </div>
   </div>
 
+  <!-- Face ID Lock Screen -->
+  <div id="lock-screen">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">Månadsbudget</div>
+    <div class="lock-sub">Lås upp med Face ID för att fortsätta</div>
+    <button class="faceid-btn" onclick="unlockWithFaceId()">
+      <span style="font-size:1.3rem;">👤</span> Öppna med Face ID
+    </button>
+    <span class="lock-fallback" onclick="showNormalLogin()">Logga in på annat sätt</span>
+  </div>
+
   <!-- Share Modal -->
   <div class="modal-overlay" id="share-modal">
     <div class="modal-box">
@@ -1183,6 +1281,9 @@
         document.getElementById('save-btn').style.display = 'inline-block';
         document.getElementById('delete-budget-btn').style.display = 'inline-block';
 
+        // Show Face ID lock screen if it has been set up on this device
+        checkBiometricLock();
+
         // Migrate legacy budget (add collaborators field if missing)
         db.collection('budgets').doc(user.uid).get().then(doc => {
           if (doc.exists && !doc.data().collaborators) {
@@ -1207,7 +1308,7 @@
             // budget document → this listener fires again, but we do NOT call switchBudget
             // (which would rip out and rebuild the Firestore listener and re-render everything).
             if (!budgetReady && !activeBudgetId) {
-              budgetReady = true; // Set SYNC to prevent race condition from re-entrant list listener
+              budgetReady = true;
               if (list.length === 0) {
                 createNewBudget('Min första budget');
               } else {
@@ -1215,6 +1316,8 @@
                   const savedId = uDoc.exists && uDoc.data().activeBudgetId;
                   const target = (savedId && list.find(b => b.id === savedId)) ? savedId : list[0].id;
                   switchBudget(target);
+                  // Offer Face ID setup after first successful load
+                  setTimeout(() => offerFaceIdSetup(), 1500);
                 });
               }
             }
@@ -1232,6 +1335,7 @@
         activeBudgetId = null;
         if (unsubscribeSnapshot) unsubscribeSnapshot();
         if (unsubscribeBudgetsList) unsubscribeBudgetsList();
+        hideLockScreen();
         if (!loadState()) prefillDummy();
       }
     });
@@ -1537,6 +1641,90 @@
     function logout() {
       auth.signOut();
       showToast('Utloggad');
+    }
+
+    // ── Face ID / WebAuthn ─────────────────────────────────────────
+    const FACEID_KEY = 'manadsbudget_faceid_cred';
+
+    function webAuthnSupported() {
+      return window.PublicKeyCredential &&
+        typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function';
+    }
+
+    async function platformAuthAvailable() {
+      if (!webAuthnSupported()) return false;
+      return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    }
+
+    async function offerFaceIdSetup() {
+      if (!await platformAuthAvailable()) return;
+      if (localStorage.getItem(FACEID_KEY)) return; // Already set up
+      // Ask user
+      const want = confirm('Vill du aktivera Face ID för snabb åtkomst nästa gång?');
+      if (!want) return;
+      await setupFaceId();
+    }
+
+    async function setupFaceId() {
+      try {
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const userId = crypto.getRandomValues(new Uint8Array(16));
+        const credential = await navigator.credentials.create({
+          publicKey: {
+            challenge,
+            rp: { name: 'Månadsbudget', id: location.hostname },
+            user: { id: userId, name: currentUser.email || 'user', displayName: 'Månadsbudget' },
+            pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+            authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+            timeout: 60000
+          }
+        });
+        // Store credential id for future use
+        const credId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+        localStorage.setItem(FACEID_KEY, credId);
+        showToast('✅ Face ID aktiverat!');
+      } catch (e) {
+        if (e.name !== 'NotAllowedError') showToast('Kunde inte aktivera Face ID: ' + e.message);
+      }
+    }
+
+    async function checkBiometricLock() {
+      const credId = localStorage.getItem(FACEID_KEY);
+      if (!credId) return; // Face ID not set up – no lock
+      if (!await platformAuthAvailable()) return;
+      // Show lock screen
+      document.getElementById('lock-screen').classList.add('visible');
+    }
+
+    window.unlockWithFaceId = async function () {
+      const credId = localStorage.getItem(FACEID_KEY);
+      if (!credId) { hideLockScreen(); return; }
+      try {
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const rawId = Uint8Array.from(atob(credId), c => c.charCodeAt(0));
+        await navigator.credentials.get({
+          publicKey: {
+            challenge,
+            rpId: location.hostname,
+            allowCredentials: [{ type: 'public-key', id: rawId }],
+            userVerification: 'required',
+            timeout: 60000
+          }
+        });
+        hideLockScreen();
+      } catch (e) {
+        if (e.name === 'NotAllowedError') showToast('Face ID avbröts');
+        else showToast('Face ID misslyckades');
+      }
+    };
+
+    window.showNormalLogin = function () {
+      hideLockScreen();
+      auth.signOut();
+    };
+
+    function hideLockScreen() {
+      document.getElementById('lock-screen').classList.remove('visible');
     }
 
     function openShareModal() {
@@ -1915,7 +2103,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v3.9</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v4.0</footer>
 
 </body>
 
