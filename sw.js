@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manadsbudget-v7';
+const CACHE_NAME = 'manadsbudget-v8';
 
 const ASSETS = [
   './',
@@ -16,7 +16,7 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: remove old caches
+// Activate: remove old caches immediately
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -26,12 +26,22 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch: serve from cache, fall back to network
+// Fetch: network-first, fall back to cache
+// This ensures users always get the latest version when online.
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match('./index.html'));
-    })
+    fetch(event.request)
+      .then(response => {
+        // Update cache with fresh response
+        if (response && response.status === 200 && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => {
+        // Offline: serve from cache
+        return caches.match(event.request).then(cached => cached || caches.match('./index.html'));
+      })
   );
 });
