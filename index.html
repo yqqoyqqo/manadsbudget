@@ -592,6 +592,71 @@
       background: #075985;
     }
 
+    /* Profile panel stat cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e6ea;
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .stat-card .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.73rem;
+      color: #6b7280;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-card.success {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .stat-card.success .stat-num {
+      color: #16a34a;
+    }
+
+    .stat-card.failed {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .stat-card.failed .stat-num {
+      color: #dc2626;
+    }
+
+    .stat-card.ongoing .stat-num {
+      color: #0369a1;
+    }
+
+    .profile-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      margin: 18px 0 10px;
+    }
+
+    .profile-section-title:first-child {
+      margin-top: 0;
+    }
+
     footer.site-footer {
       text-align: center;
       padding: 28px 16px 20px;
@@ -865,6 +930,7 @@
       <button class="btn-sm" id="btn-login" onclick="openAuthModal()">Logga in</button>
       <button class="btn-sm primary" id="btn-share" onclick="openShareModal()" style="display:none;">Dela
         budget</button>
+      <button class="btn-sm" id="btn-profile" onclick="openProfileModal()" style="display:none;">👤 Profil</button>
       <button class="btn-sm" id="btn-logout" onclick="logout()" style="display:none;">Logga ut</button>
     </div>
   </div>
@@ -1087,6 +1153,48 @@
   </div>
 
 
+  <!-- Profile Modal -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-box" style="max-width:460px;">
+      <h3>👤 Min profil</h3>
+
+      <div class="profile-section-title">Budgetstatistik</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">–</div>
+          <div class="stat-label">Totalt</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-num" id="stat-success">–</div>
+          <div class="stat-label">✅ Lyckade</div>
+        </div>
+        <div class="stat-card failed">
+          <div class="stat-num" id="stat-failed">–</div>
+          <div class="stat-label">❌ Misslyckade</div>
+        </div>
+      </div>
+
+      <!-- Password section – hidden for Google users -->
+      <div id="profile-pw-section">
+        <div class="profile-section-title">Ändra lösenord</div>
+        <div class="form-group">
+          <label>Nuvarande lösenord</label>
+          <input type="password" id="pw-current" autocomplete="current-password" placeholder="Ditt nuvarande lösenord">
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label>Nytt lösenord</label>
+          <input type="password" id="pw-new" autocomplete="new-password" placeholder="Minst 6 tecken">
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:18px;">
+        <button class="modal-cancel" onclick="closeProfileModal()">Stäng</button>
+        <button class="modal-confirm" id="btn-save-pw" onclick="changePassword()" style="display:none;">Spara
+          lösenord</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Share Modal -->
   <div class="modal-overlay" id="share-modal">
     <div class="modal-box">
@@ -1185,6 +1293,7 @@
         document.getElementById('btn-login').style.display = 'none';
         document.getElementById('btn-logout').style.display = 'block';
         document.getElementById('btn-share').style.display = 'block';
+        document.getElementById('btn-profile').style.display = 'block';
         document.getElementById('user-info').innerHTML = `Inloggad som: <b>${user.email || 'Google User'}</b>`;
         document.getElementById('meta-header').style.display = 'flex';
         document.getElementById('eval-card').style.display = 'block';
@@ -1232,6 +1341,7 @@
         document.getElementById('btn-login').style.display = 'block';
         document.getElementById('btn-logout').style.display = 'none';
         document.getElementById('btn-share').style.display = 'none';
+        document.getElementById('btn-profile').style.display = 'none';
         document.getElementById('user-info').innerHTML = '';
         document.getElementById('meta-header').style.display = 'none';
         document.getElementById('eval-card').style.display = 'none';
@@ -1557,6 +1667,48 @@
       auth.signOut();
       showToast('Utloggad');
     }
+
+    // ── Profile Modal ──────────────────────────────────────────────
+    window.openProfileModal = function () {
+      // Stats
+      const total = userBudgets.length;
+      const success = userBudgets.filter(b => b.status === 'success').length;
+      const failed = userBudgets.filter(b => b.status === 'failed').length;
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-success').textContent = success;
+      document.getElementById('stat-failed').textContent = failed;
+
+      // Show password section only for email/password users
+      const isEmailUser = currentUser && currentUser.providerData.some(p => p.providerId === 'password');
+      document.getElementById('profile-pw-section').style.display = isEmailUser ? 'block' : 'none';
+      document.getElementById('btn-save-pw').style.display = isEmailUser ? 'inline-block' : 'none';
+      document.getElementById('pw-current').value = '';
+      document.getElementById('pw-new').value = '';
+
+      document.getElementById('profile-modal').classList.add('open');
+    };
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.remove('open');
+    }
+
+    window.changePassword = async function () {
+      const currentPw = document.getElementById('pw-current').value;
+      const newPw = document.getElementById('pw-new').value;
+      if (!currentPw || !newPw) return showToast('Fyll i båda lösenordsfälten');
+      if (newPw.length < 6) return showToast('Nytt lösenord måste vara minst 6 tecken');
+      try {
+        // Firebase requires re-authentication before password change
+        const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPw);
+        await currentUser.reauthenticateWithCredential(credential);
+        await currentUser.updatePassword(newPw);
+        showToast('✅ Lösenord ändrat!');
+        closeProfileModal();
+      } catch (e) {
+        if (e.code === 'auth/wrong-password') showToast('Fel nuvarande lösenord');
+        else showToast('Kunde inte ändra: ' + e.message);
+      }
+    };
 
     function openShareModal() {
       document.getElementById('share-my-id').value = activeBudgetId || 'Ingen budget vald';
@@ -1934,7 +2086,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v4.5</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v4.6</footer>
 
 </body>
 
