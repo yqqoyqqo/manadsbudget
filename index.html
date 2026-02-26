@@ -205,8 +205,8 @@
       gap: 10px;
       margin-bottom: 20px;
       flex-wrap: wrap;
-      /* Push below phone status bar (iOS notch / Android status bar) */
-      padding-top: max(12px, env(safe-area-inset-top));
+      /* Push below phone status bar – adapts automatically per device */
+      padding-top: calc(env(safe-area-inset-top) + 8px);
     }
 
     .btn-sm {
