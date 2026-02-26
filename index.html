@@ -770,23 +770,38 @@
       border-radius: 6px;
     }
 
-    .google-btn {
+    .social-btn {
       width: 100%;
       background: #fff;
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 6px;
+      border: 1.5px solid #e2e6ea;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 0.9rem;
       font-weight: 600;
+      color: #374151;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       margin-top: 10px;
+      transition: background 0.15s, border-color 0.15s;
     }
 
-    .google-btn:hover {
-      background: #f9f9f9;
+    .social-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .facebook-btn {
+      background: #1877F2;
+      color: #fff;
+      border: 1.5px solid #1877F2;
+    }
+
+    .facebook-btn:hover {
+      background: #166fe5;
+      border-color: #166fe5;
     }
 
     #toast {
@@ -1140,693 +1155,711 @@
           style="font-size:0.82rem; color:#0369a1; cursor:pointer; text-decoration:underline;">Glömt lösenord?</span>
       </div>
 
-      <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
-      <button class="google-btn" onclick="handleGoogleAuth()">
-        <svg width="18" height="18" viewBox="0 0 24 24">
-          <path fill="#4285F4"
-            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-          <path fill="#34A853"
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-          <path fill="#FBBC05"
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-          <path fill="#EA4335"
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-        </svg>
-        Fortsätt med Google
-      </button>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="social-btn" onclick="handleGoogleAuth()">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+            <path fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          Fortsätt med Google
+        </button>
+
+        <button class="social-btn facebook-btn" onclick="handleFacebookAuth()">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#ffffff"
+              d="M24 12.07c0-6.63-5.37-12-12-12s-12 5.37-12 12c0 5.99 4.39 10.95 10.13 11.85v-8.38H7.08v-3.47h3.05v-2.64c0-3.01 1.79-4.67 4.53-4.67 1.31 0 2.69.24 2.69.24v2.95h-1.51c-1.49 0-1.96.93-1.96 1.87v2.25h3.33l-.53 3.47h-2.8v8.38C19.61 23.03 24 18.06 24 12.07z" />
+          </svg>
+          Fortsätt med Facebook
+        </button>
+      </div>
     </div>
-  </div>
 
 
-  <!-- Profile Modal -->
-  <div class="modal-overlay" id="profile-modal">
-    <div class="modal-box" style="max-width:460px;">
-      <h3>👤 Min profil</h3>
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profile-modal">
+      <div class="modal-box" style="max-width:460px;">
+        <h3>👤 Min profil</h3>
 
-      <div class="profile-section-title">Budgetstatistik</div>
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-num" id="stat-total">–</div>
-          <div class="stat-label">Totalt</div>
+        <div class="profile-section-title">Budgetstatistik</div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-total">–</div>
+            <div class="stat-label">Totalt</div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-num" id="stat-success">–</div>
+            <div class="stat-label">✅ Lyckade</div>
+          </div>
+          <div class="stat-card failed">
+            <div class="stat-num" id="stat-failed">–</div>
+            <div class="stat-label">❌ Misslyckade</div>
+          </div>
         </div>
-        <div class="stat-card success">
-          <div class="stat-num" id="stat-success">–</div>
-          <div class="stat-label">✅ Lyckade</div>
+
+        <!-- Password section – hidden for Google users -->
+        <div id="profile-pw-section">
+          <div class="profile-section-title">Ändra lösenord</div>
+          <div class="form-group">
+            <label>Nuvarande lösenord</label>
+            <input type="password" id="pw-current" autocomplete="current-password"
+              placeholder="Ditt nuvarande lösenord">
+          </div>
+          <div class="form-group" style="margin-top:10px;">
+            <label>Nytt lösenord</label>
+            <input type="password" id="pw-new" autocomplete="new-password" placeholder="Minst 6 tecken">
+          </div>
         </div>
-        <div class="stat-card failed">
-          <div class="stat-num" id="stat-failed">–</div>
-          <div class="stat-label">❌ Misslyckade</div>
+
+        <div class="modal-actions" style="margin-top:18px;">
+          <button class="modal-cancel" onclick="closeProfileModal()">Stäng</button>
+          <button class="modal-confirm" id="btn-save-pw" onclick="changePassword()" style="display:none;">Spara
+            lösenord</button>
         </div>
       </div>
+    </div>
 
-      <!-- Password section – hidden for Google users -->
-      <div id="profile-pw-section">
-        <div class="profile-section-title">Ändra lösenord</div>
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="share-modal">
+      <div class="modal-box">
+        <h3>Dela Budget</h3>
+        <p>Andra kan gå med i denna budget genom att skriva in din budgetkod nedan.</p>
+
         <div class="form-group">
-          <label>Nuvarande lösenord</label>
-          <input type="password" id="pw-current" autocomplete="current-password" placeholder="Ditt nuvarande lösenord">
+          <label>Din Budgetkod (Ge denna till andra)</label>
+          <input type="text" id="share-my-id" readonly
+            style="background:#f1f5f9; font-family:monospace; font-weight:bold; letter-spacing:1px; cursor:copy;"
+            onclick="this.select(); document.execCommand('copy'); showToast('Budgets-ID kopierat!');">
         </div>
-        <div class="form-group" style="margin-top:10px;">
-          <label>Nytt lösenord</label>
-          <input type="password" id="pw-new" autocomplete="new-password" placeholder="Minst 6 tecken">
+
+        <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
+
+        <div class="form-group">
+          <label>Gå med i någon annans budget</label>
+          <input type="text" id="share-join-id" placeholder="Klistra in kod här...">
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeShareModal()">Stäng</button>
+          <button class="modal-confirm" onclick="joinBudget()">Gå med</button>
         </div>
       </div>
+    </div>
 
-      <div class="modal-actions" style="margin-top:18px;">
-        <button class="modal-cancel" onclick="closeProfileModal()">Stäng</button>
-        <button class="modal-confirm" id="btn-save-pw" onclick="changePassword()" style="display:none;">Spara
-          lösenord</button>
+    <!-- Hidden export template -->
+    <div id="export-template">
+      <h1>Månadsbudget – Sammanfattning</h1>
+      <div id="exp-budget-name" style="font-size:1.1rem; font-weight:700; color:#1e293b; margin-bottom:2px;"></div>
+      <div class="exp-date" id="exp-date-text"></div>
+      <div class="exp-section">
+        <h2>Inkomster</h2>
+        <div id="exp-income-rows"></div>
+        <div class="exp-total"><span>Total inkomst</span><span id="exp-income-total"></span></div>
+      </div>
+      <div class="exp-section">
+        <h2>Fasta utgifter</h2>
+        <div id="exp-fixed-rows"></div>
+        <div class="exp-total"><span>Total fasta</span><span id="exp-fixed-total"></span></div>
+      </div>
+      <div class="exp-section">
+        <h2>Rörliga utgifter</h2>
+        <div id="exp-variable-rows"></div>
+        <div class="exp-total"><span>Total rörliga</span><span id="exp-variable-total"></span></div>
+      </div>
+      <div class="exp-result">
+        <div class="exp-result-label">KVAR ATT FÖRDELA</div>
+        <div class="exp-result-amount" id="exp-result-amount"></div>
+      </div>
+      <div class="exp-saving-section" id="exp-saving-section">
+        <h2>Sparande</h2>
+        <div id="exp-saving-rows"></div>
+        <div class="exp-total"><span>Totalt sparande</span><span id="exp-saving-total"></span></div>
+      </div>
+      <div id="exp-unallocated-section"
+        style="margin-top:18px; padding-top:14px; border-top:2px solid #e2e6ea; display:flex; justify-content:space-between; align-items:center;">
+        <span
+          style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:#6b7280; font-weight:600;">Ofördelat
+          kvar</span>
+        <span id="exp-unallocated-amount" style="font-size:1.1rem; font-weight:700;"></span>
       </div>
     </div>
-  </div>
 
-  <!-- Share Modal -->
-  <div class="modal-overlay" id="share-modal">
-    <div class="modal-box">
-      <h3>Dela Budget</h3>
-      <p>Andra kan gå med i denna budget genom att skriva in din budgetkod nedan.</p>
+    <script>
+      // ── Firebase Init ──────────────────────────────────────────────
+      const firebaseConfig = {
+        apiKey: "AIzaSyAE9i9wKC3I5KN0-Wk4EZrG-kx19YQ_brQ",
+        authDomain: "manadsbudget-app.firebaseapp.com",
+        projectId: "manadsbudget-app",
+        storageBucket: "manadsbudget-app.firebasestorage.app",
+        messagingSenderId: "910633634669",
+        appId: "1:910633634669:web:5b40984799065bc51c2864",
+        measurementId: "G-W84R57X1RV"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
 
-      <div class="form-group">
-        <label>Din Budgetkod (Ge denna till andra)</label>
-        <input type="text" id="share-my-id" readonly
-          style="background:#f1f5f9; font-family:monospace; font-weight:bold; letter-spacing:1px; cursor:copy;"
-          onclick="this.select(); document.execCommand('copy'); showToast('Budgets-ID kopierat!');">
-      </div>
+      // ── State ──────────────────────────────────────────────────
+      let state = { income: [], fixed: [], variable: [], saving: [] };
+      let nextId = 1;
+      let budgetMeta = { name: '', status: 'none', comment: '' };
+      let userBudgets = [];
+      let currentUser = null;
+      let activeBudgetId = null;
+      let unsubscribeSnapshot = null;
+      let unsubscribeBudgetsList = null;
+      let isSyncing = false;
+      let nameUpdateTimer, commentUpdateTimer;
 
-      <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
+      // ── Auth Observer ──────────────────────────────────────
+      auth.onAuthStateChanged(user => {
+        currentUser = user;
+        if (user) {
+          document.getElementById('btn-login').style.display = 'none';
+          document.getElementById('btn-logout').style.display = 'block';
+          document.getElementById('btn-share').style.display = 'block';
+          document.getElementById('btn-profile').style.display = 'block';
+          document.getElementById('user-info').innerHTML = `Inloggad som: <b>${user.email || 'Google User'}</b>`;
+          document.getElementById('meta-header').style.display = 'flex';
+          document.getElementById('eval-card').style.display = 'block';
+          document.getElementById('save-btn').style.display = 'inline-block';
+          document.getElementById('delete-budget-btn').style.display = 'inline-block';
 
-      <div class="form-group">
-        <label>Gå med i någon annans budget</label>
-        <input type="text" id="share-join-id" placeholder="Klistra in kod här...">
-      </div>
-      <div class="modal-actions">
-        <button class="modal-cancel" onclick="closeShareModal()">Stäng</button>
-        <button class="modal-confirm" onclick="joinBudget()">Gå med</button>
-      </div>
-    </div>
-  </div>
+          // Migrate legacy budget (add collaborators field if missing)
+          db.collection('budgets').doc(user.uid).get().then(doc => {
+            if (doc.exists && !doc.data().collaborators) {
+              doc.ref.update({ collaborators: [user.uid], name: 'Min Budget', status: 'none', comment: '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            }
+          });
 
-  <!-- Hidden export template -->
-  <div id="export-template">
-    <h1>Månadsbudget – Sammanfattning</h1>
-    <div id="exp-budget-name" style="font-size:1.1rem; font-weight:700; color:#1e293b; margin-bottom:2px;"></div>
-    <div class="exp-date" id="exp-date-text"></div>
-    <div class="exp-section">
-      <h2>Inkomster</h2>
-      <div id="exp-income-rows"></div>
-      <div class="exp-total"><span>Total inkomst</span><span id="exp-income-total"></span></div>
-    </div>
-    <div class="exp-section">
-      <h2>Fasta utgifter</h2>
-      <div id="exp-fixed-rows"></div>
-      <div class="exp-total"><span>Total fasta</span><span id="exp-fixed-total"></span></div>
-    </div>
-    <div class="exp-section">
-      <h2>Rörliga utgifter</h2>
-      <div id="exp-variable-rows"></div>
-      <div class="exp-total"><span>Total rörliga</span><span id="exp-variable-total"></span></div>
-    </div>
-    <div class="exp-result">
-      <div class="exp-result-label">KVAR ATT FÖRDELA</div>
-      <div class="exp-result-amount" id="exp-result-amount"></div>
-    </div>
-    <div class="exp-saving-section" id="exp-saving-section">
-      <h2>Sparande</h2>
-      <div id="exp-saving-rows"></div>
-      <div class="exp-total"><span>Totalt sparande</span><span id="exp-saving-total"></span></div>
-    </div>
-    <div id="exp-unallocated-section"
-      style="margin-top:18px; padding-top:14px; border-top:2px solid #e2e6ea; display:flex; justify-content:space-between; align-items:center;">
-      <span
-        style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:#6b7280; font-weight:600;">Ofördelat
-        kvar</span>
-      <span id="exp-unallocated-amount" style="font-size:1.1rem; font-weight:700;"></span>
-    </div>
-  </div>
+          // Listen to all budgets the user is part of — ONLY for the dropdown list.
+          // switchBudget is ONLY called during initial load (when budgetReady = false).
+          let budgetReady = false;
+          if (unsubscribeBudgetsList) unsubscribeBudgetsList();
+          unsubscribeBudgetsList = db.collection('budgets')
+            .where('collaborators', 'array-contains', user.uid)
+            .onSnapshot(snapshot => {
+              let list = [];
+              snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+              list.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+              userBudgets = list;
+              renderBudgetSelector();
 
-  <script>
-    // ── Firebase Init ──────────────────────────────────────────────
-    const firebaseConfig = {
-      apiKey: "AIzaSyAE9i9wKC3I5KN0-Wk4EZrG-kx19YQ_brQ",
-      authDomain: "manadsbudget-app.firebaseapp.com",
-      projectId: "manadsbudget-app",
-      storageBucket: "manadsbudget-app.firebasestorage.app",
-      messagingSenderId: "910633634669",
-      appId: "1:910633634669:web:5b40984799065bc51c2864",
-      measurementId: "G-W84R57X1RV"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+              // Only pick an active budget on first load. After that, typing updates the
+              // budget document → this listener fires again, but we do NOT call switchBudget
+              // (which would rip out and rebuild the Firestore listener and re-render everything).
+              if (!budgetReady && !activeBudgetId) {
+                budgetReady = true;
+                if (list.length === 0) {
+                  createNewBudget('Min första budget');
+                } else {
+                  db.collection('users').doc(user.uid).get().then(uDoc => {
+                    const savedId = uDoc.exists && uDoc.data().activeBudgetId;
+                    const target = (savedId && list.find(b => b.id === savedId)) ? savedId : list[0].id;
+                    switchBudget(target);
+                  });
+                }
+              }
+            });
 
-    // ── State ──────────────────────────────────────────────────
-    let state = { income: [], fixed: [], variable: [], saving: [] };
-    let nextId = 1;
-    let budgetMeta = { name: '', status: 'none', comment: '' };
-    let userBudgets = [];
-    let currentUser = null;
-    let activeBudgetId = null;
-    let unsubscribeSnapshot = null;
-    let unsubscribeBudgetsList = null;
-    let isSyncing = false;
-    let nameUpdateTimer, commentUpdateTimer;
+        } else {
+          document.getElementById('btn-login').style.display = 'block';
+          document.getElementById('btn-logout').style.display = 'none';
+          document.getElementById('btn-share').style.display = 'none';
+          document.getElementById('btn-profile').style.display = 'none';
+          document.getElementById('user-info').innerHTML = '';
+          document.getElementById('meta-header').style.display = 'none';
+          document.getElementById('eval-card').style.display = 'none';
+          document.getElementById('save-btn').style.display = 'none';
+          document.getElementById('delete-budget-btn').style.display = 'none';
+          activeBudgetId = null;
+          if (unsubscribeSnapshot) unsubscribeSnapshot();
+          if (unsubscribeBudgetsList) unsubscribeBudgetsList();
+          hideLockScreen();
+          if (!loadState()) prefillDummy();
+        }
+      });
 
-    // ── Auth Observer ──────────────────────────────────────
-    auth.onAuthStateChanged(user => {
-      currentUser = user;
-      if (user) {
-        document.getElementById('btn-login').style.display = 'none';
-        document.getElementById('btn-logout').style.display = 'block';
-        document.getElementById('btn-share').style.display = 'block';
-        document.getElementById('btn-profile').style.display = 'block';
-        document.getElementById('user-info').innerHTML = `Inloggad som: <b>${user.email || 'Google User'}</b>`;
-        document.getElementById('meta-header').style.display = 'flex';
-        document.getElementById('eval-card').style.display = 'block';
-        document.getElementById('save-btn').style.display = 'inline-block';
-        document.getElementById('delete-budget-btn').style.display = 'inline-block';
+      function createNewBudget(name, fixedToCarry = []) {
+        if (!currentUser) return;
+        const ref = db.collection('budgets').doc();
+        const maxId = fixedToCarry.reduce((m, r) => Math.max(m, r.id || 0), 0);
+        ref.set({
+          name: name || 'Ny Budget', status: 'none', comment: '',
+          income: [], fixed: fixedToCarry, variable: [], saving: [],
+          nextId: maxId + 1,
+          collaborators: [currentUser.uid],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => switchBudget(ref.id));
+      }
 
-        // Migrate legacy budget (add collaborators field if missing)
-        db.collection('budgets').doc(user.uid).get().then(doc => {
-          if (doc.exists && !doc.data().collaborators) {
-            doc.ref.update({ collaborators: [user.uid], name: 'Min Budget', status: 'none', comment: '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-          }
-        });
+      window.switchBudgetSelector = function (val) { if (val !== activeBudgetId) switchBudget(val); };
 
-        // Listen to all budgets the user is part of — ONLY for the dropdown list.
-        // switchBudget is ONLY called during initial load (when budgetReady = false).
-        let budgetReady = false;
-        if (unsubscribeBudgetsList) unsubscribeBudgetsList();
-        unsubscribeBudgetsList = db.collection('budgets')
-          .where('collaborators', 'array-contains', user.uid)
-          .onSnapshot(snapshot => {
-            let list = [];
-            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
-            list.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-            userBudgets = list;
-            renderBudgetSelector();
-
-            // Only pick an active budget on first load. After that, typing updates the
-            // budget document → this listener fires again, but we do NOT call switchBudget
-            // (which would rip out and rebuild the Firestore listener and re-render everything).
-            if (!budgetReady && !activeBudgetId) {
-              budgetReady = true;
-              if (list.length === 0) {
-                createNewBudget('Min första budget');
+      function switchBudget(budgetId) {
+        activeBudgetId = budgetId;
+        if (currentUser) db.collection('users').doc(currentUser.uid).set({ activeBudgetId: budgetId }, { merge: true });
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
+        unsubscribeSnapshot = db.collection('budgets').doc(budgetId).onSnapshot(doc => {
+          if (doc.metadata.hasPendingWrites) return;
+          isSyncing = true;
+          if (doc.exists) {
+            const data = doc.data();
+            const newMeta = { name: data.name || '', status: data.status || 'none', comment: data.comment || '' };
+            const cloudState = { income: data.income || [], fixed: data.fixed || [], variable: data.variable || [], saving: data.saving || [] };
+            const sameState = JSON.stringify(cloudState) === JSON.stringify({ income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving });
+            const sameMeta = JSON.stringify(newMeta) === JSON.stringify(budgetMeta);
+            if (!sameState) { state = cloudState; nextId = data.nextId || 1; renderAll(); }
+            if (!sameMeta) { budgetMeta = newMeta; updateMetaUI(); }
+            // Update collaborator badge
+            const collabs = data.collaborators || [];
+            const badge = document.getElementById('collab-badge');
+            const countEl = document.getElementById('collab-count');
+            if (badge && countEl) {
+              if (collabs.length > 1) {
+                countEl.textContent = collabs.length + ' användare';
+                badge.style.display = 'flex';
               } else {
-                db.collection('users').doc(user.uid).get().then(uDoc => {
-                  const savedId = uDoc.exists && uDoc.data().activeBudgetId;
-                  const target = (savedId && list.find(b => b.id === savedId)) ? savedId : list[0].id;
-                  switchBudget(target);
-                });
+                badge.style.display = 'none';
               }
             }
-          });
-
-      } else {
-        document.getElementById('btn-login').style.display = 'block';
-        document.getElementById('btn-logout').style.display = 'none';
-        document.getElementById('btn-share').style.display = 'none';
-        document.getElementById('btn-profile').style.display = 'none';
-        document.getElementById('user-info').innerHTML = '';
-        document.getElementById('meta-header').style.display = 'none';
-        document.getElementById('eval-card').style.display = 'none';
-        document.getElementById('save-btn').style.display = 'none';
-        document.getElementById('delete-budget-btn').style.display = 'none';
-        activeBudgetId = null;
-        if (unsubscribeSnapshot) unsubscribeSnapshot();
-        if (unsubscribeBudgetsList) unsubscribeBudgetsList();
-        hideLockScreen();
-        if (!loadState()) prefillDummy();
-      }
-    });
-
-    function createNewBudget(name, fixedToCarry = []) {
-      if (!currentUser) return;
-      const ref = db.collection('budgets').doc();
-      const maxId = fixedToCarry.reduce((m, r) => Math.max(m, r.id || 0), 0);
-      ref.set({
-        name: name || 'Ny Budget', status: 'none', comment: '',
-        income: [], fixed: fixedToCarry, variable: [], saving: [],
-        nextId: maxId + 1,
-        collaborators: [currentUser.uid],
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => switchBudget(ref.id));
-    }
-
-    window.switchBudgetSelector = function (val) { if (val !== activeBudgetId) switchBudget(val); };
-
-    function switchBudget(budgetId) {
-      activeBudgetId = budgetId;
-      if (currentUser) db.collection('users').doc(currentUser.uid).set({ activeBudgetId: budgetId }, { merge: true });
-      if (unsubscribeSnapshot) unsubscribeSnapshot();
-      unsubscribeSnapshot = db.collection('budgets').doc(budgetId).onSnapshot(doc => {
-        if (doc.metadata.hasPendingWrites) return;
-        isSyncing = true;
-        if (doc.exists) {
-          const data = doc.data();
-          const newMeta = { name: data.name || '', status: data.status || 'none', comment: data.comment || '' };
-          const cloudState = { income: data.income || [], fixed: data.fixed || [], variable: data.variable || [], saving: data.saving || [] };
-          const sameState = JSON.stringify(cloudState) === JSON.stringify({ income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving });
-          const sameMeta = JSON.stringify(newMeta) === JSON.stringify(budgetMeta);
-          if (!sameState) { state = cloudState; nextId = data.nextId || 1; renderAll(); }
-          if (!sameMeta) { budgetMeta = newMeta; updateMetaUI(); }
-          // Update collaborator badge
-          const collabs = data.collaborators || [];
-          const badge = document.getElementById('collab-badge');
-          const countEl = document.getElementById('collab-count');
-          if (badge && countEl) {
-            if (collabs.length > 1) {
-              countEl.textContent = collabs.length + ' användare';
-              badge.style.display = 'flex';
-            } else {
-              badge.style.display = 'none';
-            }
+          } else {
+            if (state.income.length === 0 && state.fixed.length === 0) prefillDummy();
+            saveToCloud();
           }
-        } else {
-          if (state.income.length === 0 && state.fixed.length === 0) prefillDummy();
-          saveToCloud();
-        }
-        isSyncing = false;
-      });
-      renderBudgetSelector();
-    }
-
-    function renderBudgetSelector() {
-      const sel = document.getElementById('budget-selector');
-      if (!sel) return;
-      sel.innerHTML = '';
-      userBudgets.forEach(b => {
-        const opt = document.createElement('option');
-        opt.value = b.id;
-        opt.textContent = b.name || 'Namnlös budget';
-        if (b.id === activeBudgetId) opt.selected = true;
-        sel.appendChild(opt);
-      });
-      // Also update name input if not focused
-      const ni = document.getElementById('budget-name-input');
-      if (ni && document.activeElement !== ni) ni.value = budgetMeta.name;
-    }
-
-    function updateMetaUI() {
-      const ni = document.getElementById('budget-name-input');
-      if (ni && document.activeElement !== ni) ni.value = budgetMeta.name;
-      const ci = document.getElementById('budget-comment');
-      if (ci && document.activeElement !== ci) ci.value = budgetMeta.comment;
-      ['none', 'success', 'failed'].forEach(s => {
-        const b = document.getElementById('btn-status-' + s);
-        if (b) b.className = 'status-btn' + (budgetMeta.status === s ? ' active-' + s : '');
-      });
-    }
-
-    window.openDeleteModal = function () {
-      const name = budgetMeta.name || 'denna budget';
-      document.getElementById('delete-modal-text').textContent = `Vill du permanent radera "${name}"? Detta kan inte ångras.`;
-      document.getElementById('delete-modal').classList.add('open');
-    };
-
-    window.deleteBudget = async function () {
-      if (!currentUser || !activeBudgetId) return;
-      document.getElementById('delete-modal').classList.remove('open');
-      const deletedId = activeBudgetId;
-
-      // Find which budget to switch to (next in list, skip the one being deleted)
-      const remaining = userBudgets.filter(b => b.id !== deletedId);
-
-      if (remaining.length > 0) {
-        // Switch to another budget first, then delete
-        switchBudget(remaining[0].id);
-      } else {
-        // No budgets left — clear state and create a fresh one
-        if (unsubscribeSnapshot) unsubscribeSnapshot();
-        activeBudgetId = null;
-        state = { income: [], fixed: [], variable: [], saving: [] };
-        budgetMeta = { name: '', status: 'none', comment: '' };
-        createNewBudget('Min budget');
-      }
-
-      // Delete the document from Firestore
-      await db.collection('budgets').doc(deletedId).delete();
-      showToast('🗑️ Budget raderad');
-    };
-
-    window.setBudgetStatus = function (status) {
-
-      budgetMeta.status = status;
-      updateMetaUI();
-      if (currentUser && activeBudgetId) {
-        db.collection('budgets').doc(activeBudgetId).update({ status: status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-      } else saveState();
-    };
-
-    window.scheduleBudgetNameUpdate = function (val) {
-      budgetMeta.name = val;
-      // Update dropdown immediately (local)
-      userBudgets.forEach(b => { if (b.id === activeBudgetId) b.name = val; });
-      renderBudgetSelector();
-      clearTimeout(nameUpdateTimer);
-      nameUpdateTimer = setTimeout(() => {
-        if (currentUser && activeBudgetId) {
-          db.collection('budgets').doc(activeBudgetId).update({ name: val, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-        } else saveState();
-      }, 600);
-    };
-
-    window.scheduleCommentUpdate = function (val) {
-      budgetMeta.comment = val;
-      clearTimeout(commentUpdateTimer);
-      commentUpdateTimer = setTimeout(() => {
-        if (currentUser && activeBudgetId) {
-          db.collection('budgets').doc(activeBudgetId).update({ comment: val, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-        } else saveState();
-      }, 700);
-    };
-
-
-
-    function saveState() {
-      if (isSyncing) return;
-      if (currentUser && activeBudgetId) {
-        saveToCloud();
-      } else {
-        localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId, budgetMeta }));
-      }
-    }
-
-    function saveToCloud() {
-      if (!activeBudgetId) return;
-      db.collection('budgets').doc(activeBudgetId).set({
-        income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
-        nextId: nextId,
-        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-    }
-
-    window.manuallySave = function () {
-      if (!currentUser || !activeBudgetId) return;
-      clearTimeout(saveCloudTimer); // Spola debounce-timern
-      const btn = document.getElementById('save-btn');
-      btn.textContent = '⏳ Sparar...';
-      btn.disabled = true;
-      db.collection('budgets').doc(activeBudgetId).set({
-        income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
-        nextId: nextId,
-        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(() => {
-        btn.textContent = '✓ Sparat';
-        btn.classList.add('saved');
-        btn.disabled = false;
-        setTimeout(() => {
-          btn.textContent = '💾 Spara';
-          btn.classList.remove('saved');
-        }, 2000);
-      }).catch(() => {
-        btn.textContent = '💾 Spara';
-        btn.disabled = false;
-        showToast('⚠️ Kunde inte spara. Kontrollera nätverket.');
-      });
-    };
-
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem('manadsbudget_v2');
-        if (!raw) return false;
-        const saved = JSON.parse(raw);
-        state = saved.state;
-        nextId = saved.nextId || 1;
-        budgetMeta = saved.budgetMeta || { name: 'Lokal Budget', status: 'none', comment: '' };
-        updateMetaUI();
-        renderAll();
-        return true;
-      } catch (e) { return false; }
-    }
-
-    function prefillDummy() {
-      state = { income: [], fixed: [], variable: [], saving: [] };
-      const now = new Date();
-      const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
-      budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
-      addRow('income', { name: 'Lön', amount: 35000 }, true);
-      addRow('fixed', { name: 'Hyra', amount: 9500 }, true);
-      addRow('fixed', { name: 'Hemförsäkring', amount: 250 }, true);
-      addRow('variable', { name: 'Mat', amount: 3500 }, true);
-      addRow('variable', { name: 'Nöje', amount: 1000 }, true);
-      addSavingRow({ name: 'Buffert', type: 'percent', value: 10 }, true);
-      renderAll();
-      saveState();
-    }
-
-
-    let installPromptEvent = null;
-
-    // Fånga upp install-eventet (Android / Chrome)
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      installPromptEvent = e;
-      showInstallButton();
-    });
-
-    // Göm knappen om appen redan körs som standalone (installerad)
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-      // Appen är redan installerad — dölj knappen
-    } else {
-      // Kolla om det är iOS Safari (ingen beforeinstallprompt-support)
-      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-      const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
-      if (isIOS && isSafari) showInstallButton();
-    }
-
-    function showInstallButton() {
-      const btn = document.getElementById('btn-install');
-      if (btn) btn.style.display = 'inline-block';
-    }
-
-    window.triggerInstall = function () {
-      if (installPromptEvent) {
-        // Android / Chrome: trigga native install-dialog
-        installPromptEvent.prompt();
-        installPromptEvent.userChoice.then(() => {
-          installPromptEvent = null;
-          document.getElementById('btn-install').style.display = 'none';
+          isSyncing = false;
         });
-      } else {
-        // iOS: visa steg-för-steg instruktioner
-        document.getElementById('ios-install-modal').classList.add('open');
+        renderBudgetSelector();
       }
-    };
 
-    function init() {
-      updateDateDisplay();
-    }
+      function renderBudgetSelector() {
+        const sel = document.getElementById('budget-selector');
+        if (!sel) return;
+        sel.innerHTML = '';
+        userBudgets.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = b.name || 'Namnlös budget';
+          if (b.id === activeBudgetId) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        // Also update name input if not focused
+        const ni = document.getElementById('budget-name-input');
+        if (ni && document.activeElement !== ni) ni.value = budgetMeta.name;
+      }
 
+      function updateMetaUI() {
+        const ni = document.getElementById('budget-name-input');
+        if (ni && document.activeElement !== ni) ni.value = budgetMeta.name;
+        const ci = document.getElementById('budget-comment');
+        if (ci && document.activeElement !== ci) ci.value = budgetMeta.comment;
+        ['none', 'success', 'failed'].forEach(s => {
+          const b = document.getElementById('btn-status-' + s);
+          if (b) b.className = 'status-btn' + (budgetMeta.status === s ? ' active-' + s : '');
+        });
+      }
 
-    function updateDateDisplay() {
-      const now = new Date();
+      window.openDeleteModal = function () {
+        const name = budgetMeta.name || 'denna budget';
+        document.getElementById('delete-modal-text').textContent = `Vill du permanent radera "${name}"? Detta kan inte ångras.`;
+        document.getElementById('delete-modal').classList.add('open');
+      };
 
-      document.getElementById('exp-date-text').textContent = now.toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    }
+      window.deleteBudget = async function () {
+        if (!currentUser || !activeBudgetId) return;
+        document.getElementById('delete-modal').classList.remove('open');
+        const deletedId = activeBudgetId;
 
-    // ── Auth & Share Functions ─────────────────────────────────────
-    function openAuthModal() { document.getElementById('auth-modal').classList.add('open'); }
-    function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+        // Find which budget to switch to (next in list, skip the one being deleted)
+        const remaining = userBudgets.filter(b => b.id !== deletedId);
 
-    async function handleEmailAuth(mode) {
-      const email = document.getElementById('auth-email').value;
-      const pass = document.getElementById('auth-password').value;
-      if (!email || !pass) return showToast('Fyll i mejl och lösenord');
-      try {
-        if (mode === 'login') {
-          await auth.signInWithEmailAndPassword(email, pass);
-          showToast('Inloggad!');
+        if (remaining.length > 0) {
+          // Switch to another budget first, then delete
+          switchBudget(remaining[0].id);
         } else {
-          await auth.createUserWithEmailAndPassword(email, pass);
-          showToast('Konto skapat!');
+          // No budgets left — clear state and create a fresh one
+          if (unsubscribeSnapshot) unsubscribeSnapshot();
+          activeBudgetId = null;
+          state = { income: [], fixed: [], variable: [], saving: [] };
+          budgetMeta = { name: '', status: 'none', comment: '' };
+          createNewBudget('Min budget');
         }
-        closeAuthModal();
-      } catch (e) { showToast('Fel: ' + e.message); }
-    }
 
-    async function handleGoogleAuth() {
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await auth.signInWithPopup(provider);
-        closeAuthModal();
-        showToast('Inloggad med Google!');
-      } catch (e) { showToast('Inloggning avbröts'); }
-    }
+        // Delete the document from Firestore
+        await db.collection('budgets').doc(deletedId).delete();
+        showToast('🗑️ Budget raderad');
+      };
 
-    async function resetPassword() {
-      const email = document.getElementById('auth-email').value.trim();
-      if (!email) return showToast('Fyll i din e-postadress först');
-      try {
-        await auth.sendPasswordResetEmail(email);
-        showToast('✅ Återställningslänk skickad till ' + email);
-        closeAuthModal();
-      } catch (e) { showToast('Kunde inte skicka: ' + e.message); }
-    }
+      window.setBudgetStatus = function (status) {
 
-    function logout() {
-      auth.signOut();
-      showToast('Utloggad');
-    }
+        budgetMeta.status = status;
+        updateMetaUI();
+        if (currentUser && activeBudgetId) {
+          db.collection('budgets').doc(activeBudgetId).update({ status: status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else saveState();
+      };
 
-    // ── Profile Modal ──────────────────────────────────────────────
-    window.openProfileModal = function () {
-      // Stats
-      const total = userBudgets.length;
-      const success = userBudgets.filter(b => b.status === 'success').length;
-      const failed = userBudgets.filter(b => b.status === 'failed').length;
-      document.getElementById('stat-total').textContent = total;
-      document.getElementById('stat-success').textContent = success;
-      document.getElementById('stat-failed').textContent = failed;
+      window.scheduleBudgetNameUpdate = function (val) {
+        budgetMeta.name = val;
+        // Update dropdown immediately (local)
+        userBudgets.forEach(b => { if (b.id === activeBudgetId) b.name = val; });
+        renderBudgetSelector();
+        clearTimeout(nameUpdateTimer);
+        nameUpdateTimer = setTimeout(() => {
+          if (currentUser && activeBudgetId) {
+            db.collection('budgets').doc(activeBudgetId).update({ name: val, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+          } else saveState();
+        }, 600);
+      };
 
-      // Show password section only for email/password users
-      const isEmailUser = currentUser && currentUser.providerData.some(p => p.providerId === 'password');
-      document.getElementById('profile-pw-section').style.display = isEmailUser ? 'block' : 'none';
-      document.getElementById('btn-save-pw').style.display = isEmailUser ? 'inline-block' : 'none';
-      document.getElementById('pw-current').value = '';
-      document.getElementById('pw-new').value = '';
+      window.scheduleCommentUpdate = function (val) {
+        budgetMeta.comment = val;
+        clearTimeout(commentUpdateTimer);
+        commentUpdateTimer = setTimeout(() => {
+          if (currentUser && activeBudgetId) {
+            db.collection('budgets').doc(activeBudgetId).update({ comment: val, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+          } else saveState();
+        }, 700);
+      };
 
-      document.getElementById('profile-modal').classList.add('open');
-    };
 
-    function closeProfileModal() {
-      document.getElementById('profile-modal').classList.remove('open');
-    }
 
-    window.changePassword = async function () {
-      const currentPw = document.getElementById('pw-current').value;
-      const newPw = document.getElementById('pw-new').value;
-      if (!currentPw || !newPw) return showToast('Fyll i båda lösenordsfälten');
-      if (newPw.length < 6) return showToast('Nytt lösenord måste vara minst 6 tecken');
-      try {
-        // Firebase requires re-authentication before password change
-        const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPw);
-        await currentUser.reauthenticateWithCredential(credential);
-        await currentUser.updatePassword(newPw);
-        showToast('✅ Lösenord ändrat!');
-        closeProfileModal();
-      } catch (e) {
-        if (e.code === 'auth/wrong-password') showToast('Fel nuvarande lösenord');
-        else showToast('Kunde inte ändra: ' + e.message);
+      function saveState() {
+        if (isSyncing) return;
+        if (currentUser && activeBudgetId) {
+          saveToCloud();
+        } else {
+          localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId, budgetMeta }));
+        }
       }
-    };
 
-    function openShareModal() {
-      document.getElementById('share-my-id').value = activeBudgetId || 'Ingen budget vald';
-      document.getElementById('share-join-id').value = '';
-      document.getElementById('share-modal').classList.add('open');
-    }
-    function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
+      function saveToCloud() {
+        if (!activeBudgetId) return;
+        db.collection('budgets').doc(activeBudgetId).set({
+          income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
+          nextId: nextId,
+          name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
 
-    function joinBudget() {
-      const newId = document.getElementById('share-join-id').value.trim();
-      if (!newId) return;
-      if (!currentUser) return showToast('Du måste vara inloggad');
+      window.manuallySave = function () {
+        if (!currentUser || !activeBudgetId) return;
+        clearTimeout(saveCloudTimer); // Spola debounce-timern
+        const btn = document.getElementById('save-btn');
+        btn.textContent = '⏳ Sparar...';
+        btn.disabled = true;
+        db.collection('budgets').doc(activeBudgetId).set({
+          income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
+          nextId: nextId,
+          name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).then(() => {
+          btn.textContent = '✓ Sparat';
+          btn.classList.add('saved');
+          btn.disabled = false;
+          setTimeout(() => {
+            btn.textContent = '💾 Spara';
+            btn.classList.remove('saved');
+          }, 2000);
+        }).catch(() => {
+          btn.textContent = '💾 Spara';
+          btn.disabled = false;
+          showToast('⚠️ Kunde inte spara. Kontrollera nätverket.');
+        });
+      };
 
-      // Check if budget exists, then add user to collaborators and switch to it
-      db.collection('budgets').doc(newId).get().then(doc => {
-        if (doc.exists) {
-          // Add current user to the budget's collaborators list (so it shows in their dropdown)
-          doc.ref.update({
-            collaborators: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-          }).then(() => {
-            // Save as active budget in user's profile
-            db.collection('users').doc(currentUser.uid).set({ activeBudgetId: newId }, { merge: true });
-            closeShareModal();
-            showToast('Gick med i delad budget!');
-            // Switch to the shared budget immediately
-            switchBudget(newId);
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem('manadsbudget_v2');
+          if (!raw) return false;
+          const saved = JSON.parse(raw);
+          state = saved.state;
+          nextId = saved.nextId || 1;
+          budgetMeta = saved.budgetMeta || { name: 'Lokal Budget', status: 'none', comment: '' };
+          updateMetaUI();
+          renderAll();
+          return true;
+        } catch (e) { return false; }
+      }
+
+      function prefillDummy() {
+        state = { income: [], fixed: [], variable: [], saving: [] };
+        const now = new Date();
+        const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+        budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
+        addRow('income', { name: 'Lön', amount: 35000 }, true);
+        addRow('fixed', { name: 'Hyra', amount: 9500 }, true);
+        addRow('fixed', { name: 'Hemförsäkring', amount: 250 }, true);
+        addRow('variable', { name: 'Mat', amount: 3500 }, true);
+        addRow('variable', { name: 'Nöje', amount: 1000 }, true);
+        addSavingRow({ name: 'Buffert', type: 'percent', value: 10 }, true);
+        renderAll();
+        saveState();
+      }
+
+
+      let installPromptEvent = null;
+
+      // Fånga upp install-eventet (Android / Chrome)
+      window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        installPromptEvent = e;
+        showInstallButton();
+      });
+
+      // Göm knappen om appen redan körs som standalone (installerad)
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        // Appen är redan installerad — dölj knappen
+      } else {
+        // Kolla om det är iOS Safari (ingen beforeinstallprompt-support)
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+        const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+        if (isIOS && isSafari) showInstallButton();
+      }
+
+      function showInstallButton() {
+        const btn = document.getElementById('btn-install');
+        if (btn) btn.style.display = 'inline-block';
+      }
+
+      window.triggerInstall = function () {
+        if (installPromptEvent) {
+          // Android / Chrome: trigga native install-dialog
+          installPromptEvent.prompt();
+          installPromptEvent.userChoice.then(() => {
+            installPromptEvent = null;
+            document.getElementById('btn-install').style.display = 'none';
           });
         } else {
-          showToast('Hittade ingen budget med den koden');
+          // iOS: visa steg-för-steg instruktioner
+          document.getElementById('ios-install-modal').classList.add('open');
         }
-      });
-    }
+      };
 
-    // ── Core Logistics ─────────────────────────────────────────────
-    function addRow(section, prefill = {}, skipSave = false) {
-      const id = nextId++;
-      const item = { id, name: prefill.name || '', amount: prefill.amount || '' };
-      state[section].push(item);
-      if (!skipSave) { renderAll(); saveState(); }
-    }
-    function addSavingRow(prefill = {}, skipSave = false) {
-      const id = nextId++;
-      const item = { id, name: prefill.name || '', type: prefill.type || 'percent', value: prefill.value || '' };
-      state.saving.push(item);
-      if (!skipSave) { renderAll(); saveState(); }
-    }
-    function removeRow(section, id) {
-      state[section] = state[section].filter(r => r.id !== id);
-      renderAll(); saveState();
-    }
-    let saveCloudTimer = null;
-    window.triggerUpdateField = function (section, id, field, value) {
-      const item = state[section].find(r => r.id === id);
-      if (item) item[field] = value;
-      recalc();
-      // Spara till localStorage direkt (ingen nätverksfördröjning)
-      if (!currentUser) {
-        localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId, budgetMeta }));
-        return;
-      }
-      // Debounca Firestore-skrivning: skicka bara till servern efter 900ms tystnad.
-      // Det förhindrar att varje tangent triggar en snapshot → renderAll → fokusförlust.
-      clearTimeout(saveCloudTimer);
-      saveCloudTimer = setTimeout(() => { saveToCloud(); }, 900);
-    }
-
-    function renderAll() {
-      // Spara fokuserat fält före omrendering
-      const focused = document.activeElement;
-      let focusKey = null, selStart = 0, selEnd = 0;
-      if (focused && focused.dataset && focused.dataset.key) {
-        focusKey = focused.dataset.key;
-        try { selStart = focused.selectionStart || 0; selEnd = focused.selectionEnd || 0; } catch (e) { }
+      function init() {
+        updateDateDisplay();
       }
 
-      ['income', 'fixed', 'variable'].forEach(s => renderSection(s));
-      renderSaving();
-      recalc();
 
-      // Återställ fokus och markering efter omrendering
-      if (focusKey) {
-        const newEl = document.querySelector(`[data-key="${focusKey}"]`);
-        if (newEl) {
-          newEl.focus();
-          try { newEl.setSelectionRange(selStart, selEnd); } catch (e) { }
+      function updateDateDisplay() {
+        const now = new Date();
+
+        document.getElementById('exp-date-text').textContent = now.toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      }
+
+      // ── Auth & Share Functions ─────────────────────────────────────
+      function openAuthModal() { document.getElementById('auth-modal').classList.add('open'); }
+      function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+
+      async function handleEmailAuth(mode) {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-password').value;
+        if (!email || !pass) return showToast('Fyll i mejl och lösenord');
+        try {
+          if (mode === 'login') {
+            await auth.signInWithEmailAndPassword(email, pass);
+            showToast('Inloggad!');
+          } else {
+            await auth.createUserWithEmailAndPassword(email, pass);
+            showToast('Konto skapat!');
+          }
+          closeAuthModal();
+        } catch (e) { showToast('Fel: ' + e.message); }
+      }
+
+      async function handleGoogleAuth() {
+        try {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          await auth.signInWithPopup(provider);
+          closeAuthModal();
+          showToast('Inloggad med Google!');
+        } catch (e) { showToast('Inloggning avbröts'); }
+      }
+
+      async function handleFacebookAuth() {
+        try {
+          const provider = new firebase.auth.FacebookAuthProvider();
+          await auth.signInWithPopup(provider);
+          closeAuthModal();
+          showToast('Inloggad med Facebook!');
+        } catch (e) { showToast('Inloggning avbröts: ' + e.message); }
+      }
+
+      async function resetPassword() {
+        const email = document.getElementById('auth-email').value.trim();
+        if (!email) return showToast('Fyll i din e-postadress först');
+        try {
+          await auth.sendPasswordResetEmail(email);
+          showToast('✅ Återställningslänk skickad till ' + email);
+          closeAuthModal();
+        } catch (e) { showToast('Kunde inte skicka: ' + e.message); }
+      }
+
+      function logout() {
+        auth.signOut();
+        showToast('Utloggad');
+      }
+
+      // ── Profile Modal ──────────────────────────────────────────────
+      window.openProfileModal = function () {
+        // Stats
+        const total = userBudgets.length;
+        const success = userBudgets.filter(b => b.status === 'success').length;
+        const failed = userBudgets.filter(b => b.status === 'failed').length;
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-success').textContent = success;
+        document.getElementById('stat-failed').textContent = failed;
+
+        // Show password section only for email/password users
+        const isEmailUser = currentUser && currentUser.providerData.some(p => p.providerId === 'password');
+        document.getElementById('profile-pw-section').style.display = isEmailUser ? 'block' : 'none';
+        document.getElementById('btn-save-pw').style.display = isEmailUser ? 'inline-block' : 'none';
+        document.getElementById('pw-current').value = '';
+        document.getElementById('pw-new').value = '';
+
+        document.getElementById('profile-modal').classList.add('open');
+      };
+
+      function closeProfileModal() {
+        document.getElementById('profile-modal').classList.remove('open');
+      }
+
+      window.changePassword = async function () {
+        const currentPw = document.getElementById('pw-current').value;
+        const newPw = document.getElementById('pw-new').value;
+        if (!currentPw || !newPw) return showToast('Fyll i båda lösenordsfälten');
+        if (newPw.length < 6) return showToast('Nytt lösenord måste vara minst 6 tecken');
+        try {
+          // Firebase requires re-authentication before password change
+          const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPw);
+          await currentUser.reauthenticateWithCredential(credential);
+          await currentUser.updatePassword(newPw);
+          showToast('✅ Lösenord ändrat!');
+          closeProfileModal();
+        } catch (e) {
+          if (e.code === 'auth/wrong-password') showToast('Fel nuvarande lösenord');
+          else showToast('Kunde inte ändra: ' + e.message);
+        }
+      };
+
+      function openShareModal() {
+        document.getElementById('share-my-id').value = activeBudgetId || 'Ingen budget vald';
+        document.getElementById('share-join-id').value = '';
+        document.getElementById('share-modal').classList.add('open');
+      }
+      function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
+
+      function joinBudget() {
+        const newId = document.getElementById('share-join-id').value.trim();
+        if (!newId) return;
+        if (!currentUser) return showToast('Du måste vara inloggad');
+
+        // Check if budget exists, then add user to collaborators and switch to it
+        db.collection('budgets').doc(newId).get().then(doc => {
+          if (doc.exists) {
+            // Add current user to the budget's collaborators list (so it shows in their dropdown)
+            doc.ref.update({
+              collaborators: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+            }).then(() => {
+              // Save as active budget in user's profile
+              db.collection('users').doc(currentUser.uid).set({ activeBudgetId: newId }, { merge: true });
+              closeShareModal();
+              showToast('Gick med i delad budget!');
+              // Switch to the shared budget immediately
+              switchBudget(newId);
+            });
+          } else {
+            showToast('Hittade ingen budget med den koden');
+          }
+        });
+      }
+
+      // ── Core Logistics ─────────────────────────────────────────────
+      function addRow(section, prefill = {}, skipSave = false) {
+        const id = nextId++;
+        const item = { id, name: prefill.name || '', amount: prefill.amount || '' };
+        state[section].push(item);
+        if (!skipSave) { renderAll(); saveState(); }
+      }
+      function addSavingRow(prefill = {}, skipSave = false) {
+        const id = nextId++;
+        const item = { id, name: prefill.name || '', type: prefill.type || 'percent', value: prefill.value || '' };
+        state.saving.push(item);
+        if (!skipSave) { renderAll(); saveState(); }
+      }
+      function removeRow(section, id) {
+        state[section] = state[section].filter(r => r.id !== id);
+        renderAll(); saveState();
+      }
+      let saveCloudTimer = null;
+      window.triggerUpdateField = function (section, id, field, value) {
+        const item = state[section].find(r => r.id === id);
+        if (item) item[field] = value;
+        recalc();
+        // Spara till localStorage direkt (ingen nätverksfördröjning)
+        if (!currentUser) {
+          localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId, budgetMeta }));
+          return;
+        }
+        // Debounca Firestore-skrivning: skicka bara till servern efter 900ms tystnad.
+        // Det förhindrar att varje tangent triggar en snapshot → renderAll → fokusförlust.
+        clearTimeout(saveCloudTimer);
+        saveCloudTimer = setTimeout(() => { saveToCloud(); }, 900);
+      }
+
+      function renderAll() {
+        // Spara fokuserat fält före omrendering
+        const focused = document.activeElement;
+        let focusKey = null, selStart = 0, selEnd = 0;
+        if (focused && focused.dataset && focused.dataset.key) {
+          focusKey = focused.dataset.key;
+          try { selStart = focused.selectionStart || 0; selEnd = focused.selectionEnd || 0; } catch (e) { }
+        }
+
+        ['income', 'fixed', 'variable'].forEach(s => renderSection(s));
+        renderSaving();
+        recalc();
+
+        // Återställ fokus och markering efter omrendering
+        if (focusKey) {
+          const newEl = document.querySelector(`[data-key="${focusKey}"]`);
+          if (newEl) {
+            newEl.focus();
+            try { newEl.setSelectionRange(selStart, selEnd); } catch (e) { }
+          }
         }
       }
-    }
 
-    function renderSection(section) {
-      const list = document.getElementById(section + '-list');
-      list.innerHTML = '';
-      state[section].forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'entry-row normal';
-        row.innerHTML = `
+      function renderSection(section) {
+        const list = document.getElementById(section + '-list');
+        list.innerHTML = '';
+        state[section].forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'entry-row normal';
+          row.innerHTML = `
         <input type="text" data-key="${section}-${item.id}-name" placeholder="Namn" value="${escH(item.name)}" oninput="triggerUpdateField('${section}', ${item.id}, 'name', this.value)" />
         <input type="text" inputmode="decimal" class="num-input" data-key="${section}-${item.id}-amount" placeholder="0" value="${escH(String(item.amount))}" oninput="triggerUpdateField('${section}', ${item.id}, 'amount', this.value)" />
         <button class="del-btn" onclick="removeRow('${section}', ${item.id})">✕</button>
       `;
-        list.appendChild(row);
-      });
-    }
+          list.appendChild(row);
+        });
+      }
 
-    function renderSaving() {
-      const list = document.getElementById('saving-list');
-      list.innerHTML = '';
-      const available = getAvailable();
-      state.saving.forEach(item => {
-        const calculated = calcSaving(item, available);
-        const row = document.createElement('div');
-        row.className = 'entry-row saving-row';
-        row.innerHTML = `
+      function renderSaving() {
+        const list = document.getElementById('saving-list');
+        list.innerHTML = '';
+        const available = getAvailable();
+        state.saving.forEach(item => {
+          const calculated = calcSaving(item, available);
+          const row = document.createElement('div');
+          row.className = 'entry-row saving-row';
+          row.innerHTML = `
         <input type="text" data-key="saving-${item.id}-name" placeholder="Sparmål" value="${escH(item.name)}" oninput="triggerUpdateField('saving', ${item.id}, 'name', this.value)" />
 
         <select data-key="saving-${item.id}-type" onchange="triggerUpdateField('saving', ${item.id}, 'type', this.value)">
@@ -1836,262 +1869,262 @@
         <input type="text" inputmode="decimal" class="num-input" data-key="saving-${item.id}-value" placeholder="0" value="${escH(String(item.value))}" oninput="triggerUpdateField('saving', ${item.id}, 'value', this.value)" />
         <button class="del-btn" onclick="removeRow('saving', ${item.id})">✕</button>
       `;
-        const calc = document.createElement('div');
-        calc.className = 'saving-calc';
-        if (available > 0 && (parseFloat(item.value) || 0) > 0) {
-          calc.textContent = '= ' + fmt(calculated);
-        }
-        list.appendChild(row);
-        list.appendChild(calc);
-      });
-    }
-
-    function fmt(n) { return new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(n); }
-    function sumSection(arr) { return arr.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0); }
-    function getAvailable() { return sumSection(state.income) - sumSection(state.fixed) - sumSection(state.variable); }
-    function calcSaving(item, available) {
-      const v = parseFloat(item.value) || 0;
-      if (item.type === 'percent') return Math.max(0, available) * v / 100;
-      return v;
-    }
-    function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-
-    function recalc() {
-      const income = sumSection(state.income);
-      const fixed = sumSection(state.fixed);
-      const variable = sumSection(state.variable);
-      const available = income - fixed - variable;
-      const available_pos = Math.max(0, available);
-
-      document.getElementById('income-total').textContent = fmt(income);
-      document.getElementById('fixed-total').textContent = fmt(fixed);
-      document.getElementById('variable-total').textContent = fmt(variable);
-
-      const resEl = document.getElementById('result-amount');
-      resEl.textContent = fmt(available);
-      resEl.className = 'result-amount ' + (available >= 0 ? 'positive' : 'negative');
-
-      document.getElementById('bd-income').textContent = fmt(income);
-      document.getElementById('bd-fixed').textContent = fmt(fixed);
-      document.getElementById('bd-variable').textContent = fmt(variable);
-
-      let savingTotal = 0;
-      state.saving.forEach(item => { savingTotal += calcSaving(item, available_pos); });
-      document.getElementById('saving-total').textContent = fmt(savingTotal);
-
-      const unalloc = available_pos - savingTotal;
-      const unallocEl = document.getElementById('saving-unallocated');
-      const warnEl = document.getElementById('saving-warning');
-
-      if (available_pos > 0) unallocEl.innerHTML = `Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong>`;
-      else unallocEl.innerHTML = '';
-
-      if (savingTotal > available_pos && available_pos > 0) warnEl.classList.add('over');
-      else warnEl.classList.remove('over');
-
-      // Update live calculations in DOM without losing focus on inputs
-      const calcEls = document.querySelectorAll('.saving-calc');
-      state.saving.forEach((item, i) => {
-        if (calcEls[i]) {
-          const calculated = calcSaving(item, available_pos);
-          if (available_pos > 0 && (parseFloat(item.value) || 0) > 0) {
-            calcEls[i].textContent = '= ' + fmt(calculated);
-          } else {
-            calcEls[i].textContent = '';
+          const calc = document.createElement('div');
+          calc.className = 'saving-calc';
+          if (available > 0 && (parseFloat(item.value) || 0) > 0) {
+            calc.textContent = '= ' + fmt(calculated);
           }
-        }
-      });
-    }
-
-    // ── New month ─────────────────────────────────────────────────
-    function openNewMonthModal() {
-      // Build carry-over checklists
-      function buildList(containerId, sectionId, items, checkedByDefault) {
-        const list = document.getElementById(containerId);
-        const section = document.getElementById(sectionId);
-        list.innerHTML = '';
-        if (items.length === 0) { section.style.display = 'none'; return; }
-        section.style.display = 'block';
-        items.forEach(item => {
-          const label = document.createElement('label');
-          label.style.cssText = 'display:flex; align-items:center; gap:10px; padding:7px 4px; font-size:0.9rem; cursor:pointer; border-bottom:1px solid #f1f5f9;';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.dataset.id = item.id;
-          cb.checked = checkedByDefault;
-          cb.style.cssText = 'width:17px; height:17px; cursor:pointer; flex-shrink:0;';
-          const nameSpan = document.createElement('span');
-          nameSpan.textContent = item.name || '(namnlös)';
-          nameSpan.style.flex = '1';
-          const amtSpan = document.createElement('span');
-          amtSpan.textContent = item.amount ? new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(parseFloat(item.amount)) : '';
-          amtSpan.style.color = '#6b7280';
-          label.appendChild(cb);
-          label.appendChild(nameSpan);
-          label.appendChild(amtSpan);
-          list.appendChild(label);
+          list.appendChild(row);
+          list.appendChild(calc);
         });
       }
-      buildList('newmonth-fixed-list', 'newmonth-fixed-section', state.fixed, true);
-      buildList('newmonth-variable-list', 'newmonth-variable-section', state.variable, false);
-      document.getElementById('newmonth-modal').classList.add('open');
-    }
-    function closeNewMonthModal() { document.getElementById('newmonth-modal').classList.remove('open'); }
 
-    function confirmNewMonth() {
-      function getChecked(listId, sourceArr) {
-        const checkboxes = document.querySelectorAll('#' + listId + ' input[type=checkbox]');
-        const selectedIds = new Set([...checkboxes].filter(cb => cb.checked).map(cb => Number(cb.dataset.id)));
-        return sourceArr.filter(r => selectedIds.has(r.id)).map(r => ({ ...r }));
+      function fmt(n) { return new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(n); }
+      function sumSection(arr) { return arr.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0); }
+      function getAvailable() { return sumSection(state.income) - sumSection(state.fixed) - sumSection(state.variable); }
+      function calcSaving(item, available) {
+        const v = parseFloat(item.value) || 0;
+        if (item.type === 'percent') return Math.max(0, available) * v / 100;
+        return v;
       }
-      const fixedToKeep = getChecked('newmonth-fixed-list', state.fixed);
-      const variableToKeep = getChecked('newmonth-variable-list', state.variable);
-      const rowsToCarry = [...fixedToKeep, ...variableToKeep].map(r => ({ ...r }));
+      function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-      closeNewMonthModal();
+      function recalc() {
+        const income = sumSection(state.income);
+        const fixed = sumSection(state.fixed);
+        const variable = sumSection(state.variable);
+        const available = income - fixed - variable;
+        const available_pos = Math.max(0, available);
 
-      if (currentUser) {
-        const now = new Date();
-        now.setMonth(now.getMonth() + 1);
-        const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
-        const capName = name.charAt(0).toUpperCase() + name.slice(1);
-        // createNewBudget expects fixedToCarry — we put selected fixed there, variable go into variable
-        const ref = db.collection('budgets').doc();
-        const maxId = rowsToCarry.reduce((m, r) => Math.max(m, r.id || 0), 0);
-        ref.set({
-          name: capName, status: 'none', comment: '',
-          income: [],
-          fixed: fixedToKeep,
-          variable: variableToKeep,
-          saving: [],
-          nextId: maxId + 1,
-          collaborators: [currentUser.uid],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => switchBudget(ref.id));
-        showToast('✅ Ny budget skapad: ' + capName);
-      } else {
-        state.income = []; state.saving = [];
-        state.fixed = fixedToKeep;
-        state.variable = variableToKeep;
-        const now = new Date();
-        now.setMonth(now.getMonth() + 1);
-        const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
-        budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
-        renderAll(); updateMetaUI(); saveState(); updateDateDisplay();
-        showToast('✅ Ny månad startad!');
-      }
-    }
+        document.getElementById('income-total').textContent = fmt(income);
+        document.getElementById('fixed-total').textContent = fmt(fixed);
+        document.getElementById('variable-total').textContent = fmt(variable);
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2800);
-    }
+        const resEl = document.getElementById('result-amount');
+        resEl.textContent = fmt(available);
+        resEl.className = 'result-amount ' + (available >= 0 ? 'positive' : 'negative');
 
-    // ── Export as PNG ──────────────────────────────────────────────
-    async function exportImage() {
-      const available = getAvailable();
-      const available_pos = Math.max(0, available);
+        document.getElementById('bd-income').textContent = fmt(income);
+        document.getElementById('bd-fixed').textContent = fmt(fixed);
+        document.getElementById('bd-variable').textContent = fmt(variable);
 
-      fillExpRows('exp-income-rows', state.income);
-      fillExpRows('exp-fixed-rows', state.fixed);
-      fillExpRows('exp-variable-rows', state.variable);
+        let savingTotal = 0;
+        state.saving.forEach(item => { savingTotal += calcSaving(item, available_pos); });
+        document.getElementById('saving-total').textContent = fmt(savingTotal);
 
-      // Budgetnamn
-      const nameEl = document.getElementById('exp-budget-name');
-      nameEl.textContent = budgetMeta.name || '';
-      nameEl.style.display = budgetMeta.name ? 'block' : 'none';
+        const unalloc = available_pos - savingTotal;
+        const unallocEl = document.getElementById('saving-unallocated');
+        const warnEl = document.getElementById('saving-warning');
 
-      document.getElementById('exp-income-total').textContent = fmt(sumSection(state.income));
+        if (available_pos > 0) unallocEl.innerHTML = `Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong>`;
+        else unallocEl.innerHTML = '';
 
-      document.getElementById('exp-fixed-total').textContent = fmt(sumSection(state.fixed));
-      document.getElementById('exp-variable-total').textContent = fmt(sumSection(state.variable));
+        if (savingTotal > available_pos && available_pos > 0) warnEl.classList.add('over');
+        else warnEl.classList.remove('over');
 
-      const resEl = document.getElementById('exp-result-amount');
-      resEl.textContent = fmt(available);
-      resEl.className = 'exp-result-amount ' + (available >= 0 ? 'positive' : 'negative');
-
-      const savRows = document.getElementById('exp-saving-rows');
-      savRows.innerHTML = '';
-      let savTotal = 0;
-      state.saving.forEach(item => {
-        const calc = calcSaving(item, available_pos);
-        savTotal += calc;
-        const row = document.createElement('div');
-        row.className = 'exp-row';
-        const typeLabel = item.type === 'percent' ? `${item.value}%` : '';
-        row.innerHTML = `<span>${escH(item.name)} ${typeLabel}</span><span>${fmt(calc)}</span>`;
-        savRows.appendChild(row);
-      });
-      document.getElementById('exp-saving-total').textContent = fmt(savTotal);
-
-      // Ofördelat kvar
-      const unalloc = Math.max(0, available_pos - savTotal);
-      const unallocEl = document.getElementById('exp-unallocated-amount');
-      unallocEl.textContent = fmt(unalloc);
-      unallocEl.style.color = unalloc > 0 ? '#16a34a' : '#6b7280';
-      document.getElementById('exp-unallocated-section').style.display = state.saving.length > 0 ? 'flex' : 'none';
-
-      const tpl = document.getElementById('export-template');
-      tpl.style.left = '-9999px';
-
-      const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-      const now = new Date();
-      const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      const fileName = `manadsbudget-${dateStr}.png`;
-
-      // Försök spara till kamerarulle via Web Share API (iOS / Android)
-      // Faller tillbaka på vanlig nedladdning om delning inte stöds
-      canvas.toBlob(async (blob) => {
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
-          try {
-            await navigator.share({
-              files: [new File([blob], fileName, { type: 'image/png' })],
-              title: 'Månadsbudget'
-            });
-          } catch (e) {
-            if (e.name !== 'AbortError') {
-              // Användaren avbröt — inget fel
-              const link = document.createElement('a');
-              link.download = fileName;
-              link.href = URL.createObjectURL(blob);
-              link.click();
+        // Update live calculations in DOM without losing focus on inputs
+        const calcEls = document.querySelectorAll('.saving-calc');
+        state.saving.forEach((item, i) => {
+          if (calcEls[i]) {
+            const calculated = calcSaving(item, available_pos);
+            if (available_pos > 0 && (parseFloat(item.value) || 0) > 0) {
+              calcEls[i].textContent = '= ' + fmt(calculated);
+            } else {
+              calcEls[i].textContent = '';
             }
           }
-        } else {
-          // Desktop: ladda ner som fil
-          const link = document.createElement('a');
-          link.download = fileName;
-          link.href = URL.createObjectURL(blob);
-          link.click();
+        });
+      }
+
+      // ── New month ─────────────────────────────────────────────────
+      function openNewMonthModal() {
+        // Build carry-over checklists
+        function buildList(containerId, sectionId, items, checkedByDefault) {
+          const list = document.getElementById(containerId);
+          const section = document.getElementById(sectionId);
+          list.innerHTML = '';
+          if (items.length === 0) { section.style.display = 'none'; return; }
+          section.style.display = 'block';
+          items.forEach(item => {
+            const label = document.createElement('label');
+            label.style.cssText = 'display:flex; align-items:center; gap:10px; padding:7px 4px; font-size:0.9rem; cursor:pointer; border-bottom:1px solid #f1f5f9;';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.dataset.id = item.id;
+            cb.checked = checkedByDefault;
+            cb.style.cssText = 'width:17px; height:17px; cursor:pointer; flex-shrink:0;';
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = item.name || '(namnlös)';
+            nameSpan.style.flex = '1';
+            const amtSpan = document.createElement('span');
+            amtSpan.textContent = item.amount ? new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(parseFloat(item.amount)) : '';
+            amtSpan.style.color = '#6b7280';
+            label.appendChild(cb);
+            label.appendChild(nameSpan);
+            label.appendChild(amtSpan);
+            list.appendChild(label);
+          });
         }
-      }, 'image/png');
-    }
+        buildList('newmonth-fixed-list', 'newmonth-fixed-section', state.fixed, true);
+        buildList('newmonth-variable-list', 'newmonth-variable-section', state.variable, false);
+        document.getElementById('newmonth-modal').classList.add('open');
+      }
+      function closeNewMonthModal() { document.getElementById('newmonth-modal').classList.remove('open'); }
 
-    function fillExpRows(containerId, arr) {
-      const el = document.getElementById(containerId);
-      el.innerHTML = '';
-      arr.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'exp-row';
-        row.innerHTML = `<span>${escH(item.name) || '–'}</span><span>${fmt(parseFloat(item.amount) || 0)}</span>`;
-        el.appendChild(row);
-      });
-      if (arr.length === 0) el.innerHTML = '<div class="exp-row" style="color:#9ca3af"><span>–</span><span>0 kr</span></div>';
-    }
+      function confirmNewMonth() {
+        function getChecked(listId, sourceArr) {
+          const checkboxes = document.querySelectorAll('#' + listId + ' input[type=checkbox]');
+          const selectedIds = new Set([...checkboxes].filter(cb => cb.checked).map(cb => Number(cb.dataset.id)));
+          return sourceArr.filter(r => selectedIds.has(r.id)).map(r => ({ ...r }));
+        }
+        const fixedToKeep = getChecked('newmonth-fixed-list', state.fixed);
+        const variableToKeep = getChecked('newmonth-variable-list', state.variable);
+        const rowsToCarry = [...fixedToKeep, ...variableToKeep].map(r => ({ ...r }));
 
-    init();
+        closeNewMonthModal();
 
-    // ── Service Worker ─────────────────────────────────────────────
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => { });
-      });
-    }
-  </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.7</footer>
+        if (currentUser) {
+          const now = new Date();
+          now.setMonth(now.getMonth() + 1);
+          const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+          const capName = name.charAt(0).toUpperCase() + name.slice(1);
+          // createNewBudget expects fixedToCarry — we put selected fixed there, variable go into variable
+          const ref = db.collection('budgets').doc();
+          const maxId = rowsToCarry.reduce((m, r) => Math.max(m, r.id || 0), 0);
+          ref.set({
+            name: capName, status: 'none', comment: '',
+            income: [],
+            fixed: fixedToKeep,
+            variable: variableToKeep,
+            saving: [],
+            nextId: maxId + 1,
+            collaborators: [currentUser.uid],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(() => switchBudget(ref.id));
+          showToast('✅ Ny budget skapad: ' + capName);
+        } else {
+          state.income = []; state.saving = [];
+          state.fixed = fixedToKeep;
+          state.variable = variableToKeep;
+          const now = new Date();
+          now.setMonth(now.getMonth() + 1);
+          const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+          budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
+          renderAll(); updateMetaUI(); saveState(); updateDateDisplay();
+          showToast('✅ Ny månad startad!');
+        }
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+      }
+
+      // ── Export as PNG ──────────────────────────────────────────────
+      async function exportImage() {
+        const available = getAvailable();
+        const available_pos = Math.max(0, available);
+
+        fillExpRows('exp-income-rows', state.income);
+        fillExpRows('exp-fixed-rows', state.fixed);
+        fillExpRows('exp-variable-rows', state.variable);
+
+        // Budgetnamn
+        const nameEl = document.getElementById('exp-budget-name');
+        nameEl.textContent = budgetMeta.name || '';
+        nameEl.style.display = budgetMeta.name ? 'block' : 'none';
+
+        document.getElementById('exp-income-total').textContent = fmt(sumSection(state.income));
+
+        document.getElementById('exp-fixed-total').textContent = fmt(sumSection(state.fixed));
+        document.getElementById('exp-variable-total').textContent = fmt(sumSection(state.variable));
+
+        const resEl = document.getElementById('exp-result-amount');
+        resEl.textContent = fmt(available);
+        resEl.className = 'exp-result-amount ' + (available >= 0 ? 'positive' : 'negative');
+
+        const savRows = document.getElementById('exp-saving-rows');
+        savRows.innerHTML = '';
+        let savTotal = 0;
+        state.saving.forEach(item => {
+          const calc = calcSaving(item, available_pos);
+          savTotal += calc;
+          const row = document.createElement('div');
+          row.className = 'exp-row';
+          const typeLabel = item.type === 'percent' ? `${item.value}%` : '';
+          row.innerHTML = `<span>${escH(item.name)} ${typeLabel}</span><span>${fmt(calc)}</span>`;
+          savRows.appendChild(row);
+        });
+        document.getElementById('exp-saving-total').textContent = fmt(savTotal);
+
+        // Ofördelat kvar
+        const unalloc = Math.max(0, available_pos - savTotal);
+        const unallocEl = document.getElementById('exp-unallocated-amount');
+        unallocEl.textContent = fmt(unalloc);
+        unallocEl.style.color = unalloc > 0 ? '#16a34a' : '#6b7280';
+        document.getElementById('exp-unallocated-section').style.display = state.saving.length > 0 ? 'flex' : 'none';
+
+        const tpl = document.getElementById('export-template');
+        tpl.style.left = '-9999px';
+
+        const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const fileName = `manadsbudget-${dateStr}.png`;
+
+        // Försök spara till kamerarulle via Web Share API (iOS / Android)
+        // Faller tillbaka på vanlig nedladdning om delning inte stöds
+        canvas.toBlob(async (blob) => {
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
+            try {
+              await navigator.share({
+                files: [new File([blob], fileName, { type: 'image/png' })],
+                title: 'Månadsbudget'
+              });
+            } catch (e) {
+              if (e.name !== 'AbortError') {
+                // Användaren avbröt — inget fel
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+              }
+            }
+          } else {
+            // Desktop: ladda ner som fil
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+          }
+        }, 'image/png');
+      }
+
+      function fillExpRows(containerId, arr) {
+        const el = document.getElementById(containerId);
+        el.innerHTML = '';
+        arr.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'exp-row';
+          row.innerHTML = `<span>${escH(item.name) || '–'}</span><span>${fmt(parseFloat(item.amount) || 0)}</span>`;
+          el.appendChild(row);
+        });
+        if (arr.length === 0) el.innerHTML = '<div class="exp-row" style="color:#9ca3af"><span>–</span><span>0 kr</span></div>';
+      }
+
+      init();
+
+      // ── Service Worker ─────────────────────────────────────────────
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => { });
+        });
+      }
+    </script>
+    <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.8</footer>
 
 </body>
 
