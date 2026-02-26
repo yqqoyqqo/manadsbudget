@@ -297,6 +297,12 @@
       gap: 16px;
     }
 
+    :root.theme-modern .app-grid {
+      max-width: 600px;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
     .card {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -309,11 +315,31 @@
       grid-column: 1 / -1;
     }
 
+    :root.theme-modern .card {
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      padding: 0;
+      margin-bottom: 32px;
+      border-bottom: 2px solid #000;
+      border-radius: 0;
+    }
+
+    :root.theme-modern .card:last-child {
+      border-bottom: none;
+    }
+
     .card-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 14px;
+    }
+
+    :root.theme-modern .card-header {
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e5e5e5;
     }
 
     .card-header .dot {
@@ -332,6 +358,13 @@
     .card-header h2 {
       font-size: 0.95rem;
       font-weight: 600;
+    }
+
+    :root.theme-modern .card-header h2 {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .income .card-header .dot {
@@ -442,6 +475,22 @@
       border-color: #94a3b8;
     }
 
+    :root.theme-modern input[type="text"],
+    :root.theme-modern input[type="number"],
+    :root.theme-modern select {
+      border-color: transparent;
+      border-bottom: 1px dashed #ccc;
+      border-radius: 0;
+      padding: 4px 0;
+      background: transparent;
+    }
+
+    :root.theme-modern input:focus,
+    :root.theme-modern select:focus {
+      border-color: transparent;
+      border-bottom: 1px solid #000;
+    }
+
     input.num-input {
       text-align: right;
     }
@@ -494,18 +543,18 @@
     }
 
     :root.theme-modern .add-btn {
-      background: #ffffff !important;
+      background: transparent !important;
       color: #000000 !important;
-      border: 1px solid #000000;
-      border-radius: 4px;
-      opacity: 1;
+      border: none;
+      text-decoration: underline;
+      padding: 0;
+      margin-top: 8px;
+      font-weight: normal;
+      opacity: 0.7;
     }
 
     :root.theme-modern .add-btn:hover {
-      background: #f3f4f6 !important;
-    }
-
-    .add-btn:hover {
+      background: transparent !important;
       opacity: 1;
     }
 
@@ -519,9 +568,26 @@
       border-top: 1.5px solid rgba(0, 0, 0, 0.08);
     }
 
+    :root.theme-modern .total-row {
+      border-top: 1px solid #000;
+      padding-top: 6px;
+      margin-top: 12px;
+      font-weight: 800;
+    }
+
     .result-card {
       text-align: center;
       padding: 28px 20px;
+    }
+
+    :root.theme-modern .result-card {
+      padding: 16px 0 0 0;
+      margin-top: 24px;
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      border-top: 3px double #000;
+      border-radius: 0;
     }
 
     .result-label {
@@ -532,11 +598,20 @@
       margin-bottom: 6px;
     }
 
+    :root.theme-modern .result-label {
+      color: #000;
+      font-weight: 700;
+    }
+
     .result-amount {
       font-size: 3.2rem;
       font-weight: 800;
       letter-spacing: -2px;
       line-height: 1;
+    }
+
+    :root.theme-modern .result-amount {
+      font-size: 2.5rem;
     }
 
     .result-amount.positive {
@@ -2168,7 +2243,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.10</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.11</footer>
 
 </body>
 
