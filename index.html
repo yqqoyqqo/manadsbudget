@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Månadsbudget</title>
 
   <!-- PWA -->
@@ -23,7 +23,14 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     :root {
       --bg: #f5f6fa;
       --card: #ffffff;
@@ -43,8 +50,9 @@
       --saving-light: #f5f3ff;
       --saving-border: #ddd6fe;
       --radius: 10px;
-      --shadow: 0 1px 4px rgba(0,0,0,0.07);
+      --shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -52,21 +60,142 @@
       min-height: 100vh;
       padding: 24px 16px 48px;
     }
+
     header {
       text-align: center;
       margin-bottom: 28px;
       position: relative;
     }
+
     header h1 {
       font-size: 1.7rem;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #15803d;
     }
+
     header p.sub {
       color: var(--muted);
       font-size: 0.88rem;
       margin-top: 4px;
+    }
+
+    .budget-meta-header {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .budget-select {
+      padding: 7px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.87rem;
+      font-weight: 600;
+      outline: none;
+      color: var(--text);
+      cursor: pointer;
+      background: #fff;
+      min-width: 140px;
+    }
+
+    .budget-name-input {
+      padding: 7px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.87rem;
+      font-weight: 600;
+      outline: none;
+      color: var(--text);
+      width: 200px;
+    }
+
+    .budget-name-input:focus {
+      border-color: #0369a1;
+    }
+
+    .save-btn {
+      background: #0f766e;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 22px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .save-btn:hover {
+      background: #0d6460;
+    }
+
+    .save-btn.saved {
+      background: #16a34a;
+    }
+
+    .save-btn:active {
+      transform: scale(0.97);
+    }
+
+    .status-options {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .status-btn {
+      flex: 1;
+      padding: 9px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.18s;
+    }
+
+    .status-btn.active-none {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: var(--text);
+    }
+
+    .status-btn.active-success {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #16a34a;
+    }
+
+    .status-btn.active-failed {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+
+    .budget-comment {
+      width: 100%;
+      min-height: 80px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 11px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.18s;
+      box-sizing: border-box;
+    }
+
+    .budget-comment:focus {
+      border-color: #94a3b8;
     }
 
     /* Auth & Share UI */
@@ -76,7 +205,10 @@
       gap: 10px;
       margin-bottom: 20px;
       flex-wrap: wrap;
+      /* Push below phone status bar (iOS notch / Android status bar) */
+      padding-top: max(12px, env(safe-area-inset-top));
     }
+
     .btn-sm {
       background: #fff;
       border: 1.5px solid var(--border);
@@ -88,13 +220,21 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    .btn-sm:hover { background: #f1f5f9; }
+
+    .btn-sm:hover {
+      background: #f1f5f9;
+    }
+
     .btn-sm.primary {
       background: #0369a1;
       color: #fff;
       border: none;
     }
-    .btn-sm.primary:hover { background: #075985; }
+
+    .btn-sm.primary:hover {
+      background: #075985;
+    }
+
     .user-info {
       font-size: 0.85rem;
       font-weight: 500;
@@ -111,6 +251,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
+
     .card {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -118,47 +259,121 @@
       padding: 18px;
       box-shadow: var(--shadow);
     }
-    .card.full { grid-column: 1 / -1; }
+
+    .card.full {
+      grid-column: 1 / -1;
+    }
+
     .card-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 14px;
     }
+
     .card-header .dot {
-      width: 11px; height: 11px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
       flex-shrink: 0;
     }
+
     .card-header h2 {
       font-size: 0.95rem;
       font-weight: 600;
     }
-    .income .card-header .dot { background: var(--income-color); }
-    .income { border-color: var(--income-border); background: var(--income-light); }
-    .income .total-row { color: var(--income-color); }
-    .income .add-btn { background: var(--income-color); }
-    .fixed .card-header .dot { background: var(--fixed-color); }
-    .fixed { border-color: var(--fixed-border); background: var(--fixed-light); }
-    .fixed .total-row { color: var(--fixed-color); }
-    .fixed .add-btn { background: var(--fixed-color); }
-    .variable .card-header .dot { background: var(--variable-color); }
-    .variable { border-color: var(--variable-border); background: var(--variable-light); }
-    .variable .total-row { color: var(--variable-color); }
-    .variable .add-btn { background: var(--variable-color); }
-    .saving { border-color: var(--saving-border); background: var(--saving-light); }
-    .saving .card-header .dot { background: var(--saving-color); }
-    .saving .total-row { color: var(--saving-color); }
-    .saving .add-btn { background: var(--saving-color); }
-    .row-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .income .card-header .dot {
+      background: var(--income-color);
+    }
+
+    .income {
+      border-color: var(--income-border);
+      background: var(--income-light);
+    }
+
+    .income .total-row {
+      color: var(--income-color);
+    }
+
+    .income .add-btn {
+      background: var(--income-color);
+    }
+
+    .fixed .card-header .dot {
+      background: var(--fixed-color);
+    }
+
+    .fixed {
+      border-color: var(--fixed-border);
+      background: var(--fixed-light);
+    }
+
+    .fixed .total-row {
+      color: var(--fixed-color);
+    }
+
+    .fixed .add-btn {
+      background: var(--fixed-color);
+    }
+
+    .variable .card-header .dot {
+      background: var(--variable-color);
+    }
+
+    .variable {
+      border-color: var(--variable-border);
+      background: var(--variable-light);
+    }
+
+    .variable .total-row {
+      color: var(--variable-color);
+    }
+
+    .variable .add-btn {
+      background: var(--variable-color);
+    }
+
+    .saving {
+      border-color: var(--saving-border);
+      background: var(--saving-light);
+    }
+
+    .saving .card-header .dot {
+      background: var(--saving-color);
+    }
+
+    .saving .total-row {
+      color: var(--saving-color);
+    }
+
+    .saving .add-btn {
+      background: var(--saving-color);
+    }
+
+    .row-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
     .entry-row {
       display: grid;
       gap: 6px;
       align-items: center;
     }
-    .entry-row.normal { grid-template-columns: 1fr 110px 30px; }
-    .entry-row.saving-row { grid-template-columns: 1fr 90px 90px 30px; }
-    input[type="text"], input[type="number"], select {
+
+    .entry-row.normal {
+      grid-template-columns: 1fr 110px 30px;
+    }
+
+    .entry-row.saving-row {
+      grid-template-columns: 1fr 90px 90px 30px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
       width: 100%;
       border: 1.5px solid var(--border);
       border-radius: 6px;
@@ -169,23 +384,51 @@
       outline: none;
       transition: border-color 0.15s;
     }
+
     input[type="text"]:focus,
     input[type="number"]:focus,
-    select:focus { border-color: #94a3b8; }
-    input[type="number"] { text-align: right; }
+    select:focus {
+      border-color: #94a3b8;
+    }
+
+    input.num-input {
+      text-align: right;
+    }
+
+    /* Förhindra iOS auto-zoom vid fokus (triggas när font-size < 16px) */
+    @media (hover: none) and (pointer: coarse) {
+
+      input[type="text"],
+      input[type="number"],
+      input[type="email"],
+      input[type="password"],
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+
     .del-btn {
-      width: 26px; height: 26px;
+      width: 26px;
+      height: 26px;
       border: none;
       border-radius: 5px;
-      background: rgba(0,0,0,0.06);
+      background: rgba(0, 0, 0, 0.06);
       color: var(--muted);
       font-size: 1rem;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: background 0.15s, color 0.15s;
       flex-shrink: 0;
     }
-    .del-btn:hover { background: #fecaca; color: var(--fixed-color); }
+
+    .del-btn:hover {
+      background: #fecaca;
+      color: var(--fixed-color);
+    }
+
     .add-btn {
       margin-top: 10px;
       border: none;
@@ -198,7 +441,11 @@
       opacity: 0.9;
       transition: opacity 0.15s;
     }
-    .add-btn:hover { opacity: 1; }
+
+    .add-btn:hover {
+      opacity: 1;
+    }
+
     .total-row {
       display: flex;
       justify-content: space-between;
@@ -206,12 +453,14 @@
       font-size: 0.92rem;
       padding-top: 10px;
       margin-top: 8px;
-      border-top: 1.5px solid rgba(0,0,0,0.08);
+      border-top: 1.5px solid rgba(0, 0, 0, 0.08);
     }
+
     .result-card {
       text-align: center;
       padding: 28px 20px;
     }
+
     .result-label {
       font-size: 0.85rem;
       text-transform: uppercase;
@@ -219,14 +468,22 @@
       color: var(--muted);
       margin-bottom: 6px;
     }
+
     .result-amount {
       font-size: 3.2rem;
       font-weight: 800;
       letter-spacing: -2px;
       line-height: 1;
     }
-    .result-amount.positive { color: var(--income-color); }
-    .result-amount.negative { color: var(--fixed-color); }
+
+    .result-amount.positive {
+      color: var(--income-color);
+    }
+
+    .result-amount.negative {
+      color: var(--fixed-color);
+    }
+
     .result-breakdown {
       display: flex;
       justify-content: center;
@@ -234,16 +491,19 @@
       margin-top: 14px;
       flex-wrap: wrap;
     }
+
     .breakdown-item {
       font-size: 0.8rem;
       color: var(--muted);
     }
+
     .breakdown-item span {
       display: block;
       font-weight: 600;
       color: var(--text);
       font-size: 0.88rem;
     }
+
     .saving-warning {
       margin-top: 10px;
       padding: 8px 12px;
@@ -252,19 +512,31 @@
       font-weight: 600;
       display: none;
     }
-    .saving-warning.over { background: #fef2f2; color: var(--fixed-color); border: 1px solid var(--fixed-border); display: block; }
+
+    .saving-warning.over {
+      background: #fef2f2;
+      color: var(--fixed-color);
+      border: 1px solid var(--fixed-border);
+      display: block;
+    }
+
     .saving-unallocated {
       margin-top: 10px;
       font-size: 0.82rem;
       color: var(--muted);
     }
-    .saving-unallocated strong { color: var(--saving-color); }
+
+    .saving-unallocated strong {
+      color: var(--saving-color);
+    }
+
     .saving-calc {
       font-size: 0.75rem;
       color: var(--muted);
       text-align: right;
       padding: 0 2px;
     }
+
     .export-area {
       grid-column: 1 / -1;
       display: flex;
@@ -273,6 +545,7 @@
       padding: 4px 0 16px;
       flex-wrap: wrap;
     }
+
     .export-btn {
       background: #1e293b;
       color: #fff;
@@ -284,7 +557,11 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    .export-btn:hover { background: #0f172a; }
+
+    .export-btn:hover {
+      background: #0f172a;
+    }
+
     .newmonth-btn {
       background: #0369a1;
       color: #fff;
@@ -296,48 +573,111 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    .newmonth-btn:hover { background: #075985; }
+
+    .newmonth-btn:hover {
+      background: #075985;
+    }
 
     /* Modals */
     .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: flex; align-items: center; justify-content: center;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       z-index: 100;
       display: none;
     }
-    .modal-overlay.open { display: flex; }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
     .modal-box {
       background: #fff;
       border-radius: 12px;
       padding: 28px 32px;
       max-width: 400px;
       width: 90%;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     }
-    .modal-box.center { text-align: center; }
-    .modal-box h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 14px; }
-    .modal-box p  { font-size: 0.9rem; color: #6b7280; margin-bottom: 22px; line-height: 1.5; }
-    .modal-actions { display: flex; gap: 10px; justify-content: center; margin-top:20px;}
-    .modal-cancel {
-      padding: 9px 22px; border: 1.5px solid #e2e6ea;
-      border-radius: 7px; background: #fff; cursor: pointer;
-      font-size: 0.88rem; font-weight: 600; color: #374151;
-      transition: background 0.15s;
-    }
-    .modal-cancel:hover { background: #f3f4f6; }
-    .modal-confirm {
-      padding: 9px 22px; border: none;
-      border-radius: 7px; background: #0369a1; color: #fff;
-      cursor: pointer; font-size: 0.88rem; font-weight: 600;
-      transition: background 0.15s;
-    }
-    .modal-confirm:hover { background: #075985; }
 
-    .form-group { margin-bottom: 14px; text-align: left; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
-    .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-    
+    .modal-box.center {
+      text-align: center;
+    }
+
+    .modal-box h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .modal-box p {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .modal-cancel {
+      padding: 9px 22px;
+      border: 1.5px solid #e2e6ea;
+      border-radius: 7px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #374151;
+      transition: background 0.15s;
+    }
+
+    .modal-cancel:hover {
+      background: #f3f4f6;
+    }
+
+    .modal-confirm {
+      padding: 9px 22px;
+      border: none;
+      border-radius: 7px;
+      background: #0369a1;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .modal-confirm:hover {
+      background: #075985;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
     .google-btn {
       width: 100%;
       background: #fff;
@@ -346,649 +686,1200 @@
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
       margin-top: 10px;
     }
-    .google-btn:hover { background: #f9f9f9; }
+
+    .google-btn:hover {
+      background: #f9f9f9;
+    }
 
     #toast {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: #1e293b; color: #fff; padding: 10px 22px; border-radius: 8px;
-      font-size: 0.85rem; font-weight: 500; opacity: 0; pointer-events: none;
-      transition: opacity 0.25s, transform 0.25s; z-index: 999;
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 999;
     }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
 
     /* Hidden export canvas template */
-    #export-template { position: fixed; left: -9999px; top: 0; width: 680px; background: #ffffff; padding: 40px 48px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1d23; }
-    #export-template h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
-    #export-template .exp-date { font-size: 0.82rem; color: #6b7280; margin-bottom: 30px; }
-    #export-template .exp-section { margin-bottom: 22px; }
-    #export-template .exp-section h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; margin-bottom: 10px; }
-    #export-template .exp-row { display: flex; justify-content: space-between; font-size: 0.9rem; padding: 5px 0; border-bottom: 1px solid #f1f5f9; }
-    #export-template .exp-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.95rem; padding-top: 8px; margin-top: 4px; border-top: 2px solid #e2e6ea; }
-    #export-template .exp-result { border-top: 2px solid #e2e6ea; margin-top: 20px; padding-top: 20px; text-align: center; }
-    #export-template .exp-result-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; margin-bottom: 6px; }
-    #export-template .exp-result-amount { font-size: 2.6rem; font-weight: 800; letter-spacing: -1.5px; }
-    #export-template .exp-result-amount.positive { color: #16a34a; }
-    #export-template .exp-result-amount.negative { color: #dc2626; }
-    #export-template .exp-saving-section { margin-top: 22px; }
-    #export-template .exp-saving-section h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; margin-bottom: 10px; }
+    #export-template {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      width: 680px;
+      background: #ffffff;
+      padding: 40px 48px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #1a1d23;
+    }
+
+    #export-template h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    #export-template .exp-date {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+
+    #export-template .exp-section {
+      margin-bottom: 22px;
+    }
+
+    #export-template .exp-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    #export-template .exp-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding: 5px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    #export-template .exp-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding-top: 8px;
+      margin-top: 4px;
+      border-top: 2px solid #e2e6ea;
+    }
+
+    #export-template .exp-result {
+      border-top: 2px solid #e2e6ea;
+      margin-top: 20px;
+      padding-top: 20px;
+      text-align: center;
+    }
+
+    #export-template .exp-result-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    #export-template .exp-result-amount {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+    }
+
+    #export-template .exp-result-amount.positive {
+      color: #16a34a;
+    }
+
+    #export-template .exp-result-amount.negative {
+      color: #dc2626;
+    }
+
+    #export-template .exp-saving-section {
+      margin-top: 22px;
+    }
+
+    #export-template .exp-saving-section h2 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
 
     @media (max-width: 640px) {
-      .app-grid { grid-template-columns: 1fr; }
-      .card.full { grid-column: 1; }
-      .export-area { grid-column: 1; }
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card.full {
+        grid-column: 1;
+      }
+
+      .export-area {
+        grid-column: 1;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<div style="max-width: 900px; margin: 0 auto;">
-  <div class="top-bar">
-    <div class="user-info" id="user-info">
-      <!-- Fylls i av JS -->
-    </div>
-    <button class="btn-sm" id="btn-login" onclick="openAuthModal()">Logga in</button>
-    <button class="btn-sm primary" id="btn-share" onclick="openShareModal()" style="display:none;">Dela budget</button>
-    <button class="btn-sm" id="btn-logout" onclick="logout()" style="display:none;">Logga ut</button>
-  </div>
-</div>
-
-<header>
-  <h1>📊 Månadsbudget</h1>
-  <p class="sub" id="header-date"></p>
-  <p class="sub" id="header-sync" style="color:#0369a1; font-weight:600; display:none;">☁️ Sparas i molnet</p>
-</header>
-
-<div class="app-grid">
-
-  <!-- INCOME -->
-  <div class="card income" id="income-card">
-    <div class="card-header">
-      <div class="dot"></div>
-      <h2>🟢 Inkomster</h2>
-    </div>
-    <div class="row-list" id="income-list"></div>
-    <button class="add-btn" onclick="addRow('income')">+ Lägg till inkomst</button>
-    <div class="total-row">
-      <span>Total inkomst</span>
-      <span id="income-total">0 kr</span>
+  <div
+    style="max-width: 900px; margin: 0 auto; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);">
+    <div class="top-bar">
+      <div class="user-info" id="user-info">
+        <!-- Fylls i av JS -->
+      </div>
+      <button id="btn-install" class="btn-sm" onclick="triggerInstall()" style="display:none;">📲 Installera
+        app</button>
+      <button class="btn-sm" id="btn-login" onclick="openAuthModal()">Logga in</button>
+      <button class="btn-sm primary" id="btn-share" onclick="openShareModal()" style="display:none;">Dela
+        budget</button>
+      <button class="btn-sm" id="btn-logout" onclick="logout()" style="display:none;">Logga ut</button>
     </div>
   </div>
 
-  <!-- FIXED EXPENSES -->
-  <div class="card fixed" id="fixed-card">
-    <div class="card-header">
-      <div class="dot"></div>
-      <h2>🔴 Fasta utgifter</h2>
+  <header>
+    <h1>📊 Månadsbudget</h1>
+    <p class="sub" style="margin-top:4px; margin-bottom:0; font-size:0.85rem; color:#94a3b8; max-width:420px;">Budgetera
+      enkelt för dig själv eller med andra. Dela enkelt din budget genom att skicka en kod till andra användare.</p>
+    <div class="budget-meta-header" id="meta-header" style="display:none;">
+      <select id="budget-selector" onchange="switchBudgetSelector(this.value)" class="budget-select"></select>
+      <input type="text" id="budget-name-input" oninput="scheduleBudgetNameUpdate(this.value)"
+        placeholder="Namnge budgeten..." class="budget-name-input" />
     </div>
-    <div class="row-list" id="fixed-list"></div>
-    <button class="add-btn" onclick="addRow('fixed')">+ Lägg till fast utgift</button>
-    <div class="total-row">
-      <span>Total fasta</span>
-      <span id="fixed-total">0 kr</span>
+  </header>
+
+  <div class="app-grid">
+
+    <!-- INCOME -->
+    <div class="card income" id="income-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🟢 Inkomster</h2>
+      </div>
+      <div class="row-list" id="income-list"></div>
+      <button class="add-btn" onclick="addRow('income')">+ Lägg till inkomst</button>
+      <div class="total-row">
+        <span>Total inkomst</span>
+        <span id="income-total">0 kr</span>
+      </div>
+    </div>
+
+    <!-- FIXED EXPENSES -->
+    <div class="card fixed" id="fixed-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🔴 Fasta utgifter</h2>
+      </div>
+      <div class="row-list" id="fixed-list"></div>
+      <button class="add-btn" onclick="addRow('fixed')">+ Lägg till fast utgift</button>
+      <div class="total-row">
+        <span>Total fasta</span>
+        <span id="fixed-total">0 kr</span>
+      </div>
+    </div>
+
+    <!-- VARIABLE EXPENSES -->
+    <div class="card variable" id="variable-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🟠 Rörliga utgifter</h2>
+      </div>
+      <div class="row-list" id="variable-list"></div>
+      <button class="add-btn" onclick="addRow('variable')">+ Lägg till rörlig utgift</button>
+      <div class="total-row">
+        <span>Total rörliga</span>
+        <span id="variable-total">0 kr</span>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card result-card full">
+      <div class="result-label">🟣 Kvar att fördela</div>
+      <div class="result-amount" id="result-amount">0 kr</div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">Inkomst<span id="bd-income">0 kr</span></div>
+        <div class="breakdown-item">− Fasta<span id="bd-fixed">0 kr</span></div>
+        <div class="breakdown-item">− Rörliga<span id="bd-variable">0 kr</span></div>
+      </div>
+    </div>
+
+    <!-- SAVINGS -->
+    <div class="card saving full" id="saving-card">
+      <div class="card-header">
+        <div class="dot"></div>
+        <h2>🔵 Sparande</h2>
+      </div>
+      <div class="row-list" id="saving-list"></div>
+      <button class="add-btn" onclick="addSavingRow()">+ Lägg till sparmål</button>
+      <div class="total-row">
+        <span>Totalt sparande</span>
+        <span id="saving-total">0 kr</span>
+      </div>
+      <div class="saving-unallocated" id="saving-unallocated"></div>
+      <div class="saving-warning" id="saving-warning">⚠️ Du överskrider tillgängligt belopp!</div>
+    </div>
+
+    <!-- EVALUATION -->
+    <div class="card full" id="eval-card" style="display:none;">
+      <div class="card-header">
+        <div class="dot" style="background:#6b7280"></div>
+        <h2>Utvärdering &amp; Anteckningar</h2>
+      </div>
+      <div class="status-options">
+        <button class="status-btn" id="btn-status-none" onclick="setBudgetStatus('none')">➖ Pågående</button>
+        <button class="status-btn" id="btn-status-success" onclick="setBudgetStatus('success')">✅ Lyckad</button>
+        <button class="status-btn" id="btn-status-failed" onclick="setBudgetStatus('failed')">❌ Misslyckad</button>
+      </div>
+      <textarea id="budget-comment" class="budget-comment"
+        placeholder="Skriv reflektioner här, t.ex. 'Bilen gick sönder...'"
+        oninput="scheduleCommentUpdate(this.value)"></textarea>
+    </div>
+
+    <!-- EXPORT / NEW MONTH -->
+    <div class="export-area full">
+      <button class="newmonth-btn" onclick="openNewMonthModal()">📅 Ny månad</button>
+      <button id="save-btn" class="save-btn" onclick="manuallySave()" style="display:none;">💾 Spara</button>
+      <button class="export-btn" onclick="exportImage()">📸 Spara som bild</button>
+      <button id="delete-budget-btn" onclick="openDeleteModal()"
+        style="display:none; background:none; border:1.5px solid #fecaca; border-radius:10px; padding:13px 18px; cursor:pointer; font-size:0.95rem; font-weight:700; color:#dc2626; transition:background 0.15s;"
+        onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑️ Radera</button>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- iOS Install Instructions Modal -->
+  <div class="modal-overlay" id="ios-install-modal">
+    <div class="modal-box center" style="max-width:340px;">
+      <h3>📲 Lägg till på hemskärm</h3>
+      <p style="text-align:left; line-height:1.7; margin:14px 0;">
+        1. Tryck på <strong>dela-ikonen</strong> <span style="font-size:1.2em;">⬆️</span> längst ner i Safari<br>
+        2. Scrolla ner och välj <strong>"Lägg till på hemskärmen"</strong><br>
+        3. Tryck <strong>"Lägg till"</strong> — klart!
+      </p>
+      <div class="modal-actions">
+        <button class="modal-confirm"
+          onclick="document.getElementById('ios-install-modal').classList.remove('open')">Stäng</button>
+      </div>
     </div>
   </div>
 
-  <!-- VARIABLE EXPENSES -->
-  <div class="card variable" id="variable-card">
-    <div class="card-header">
-      <div class="dot"></div>
-      <h2>🟠 Rörliga utgifter</h2>
-    </div>
-    <div class="row-list" id="variable-list"></div>
-    <button class="add-btn" onclick="addRow('variable')">+ Lägg till rörlig utgift</button>
-    <div class="total-row">
-      <span>Total rörliga</span>
-      <span id="variable-total">0 kr</span>
-    </div>
-  </div>
+  <!-- Delete Budget Modal -->
 
-  <!-- RESULT -->
-  <div class="card result-card full">
-    <div class="result-label">🟣 Kvar att fördela</div>
-    <div class="result-amount" id="result-amount">0 kr</div>
-    <div class="result-breakdown">
-      <div class="breakdown-item">Inkomst<span id="bd-income">0 kr</span></div>
-      <div class="breakdown-item">− Fasta<span id="bd-fixed">0 kr</span></div>
-      <div class="breakdown-item">− Rörliga<span id="bd-variable">0 kr</span></div>
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal-box center">
+      <h3>🗑️ Radera budget?</h3>
+      <p id="delete-modal-text">Detta kan inte ångras.</p>
+      <div class="modal-actions">
+        <button class="modal-cancel"
+          onclick="document.getElementById('delete-modal').classList.remove('open')">Avbryt</button>
+        <button class="modal-confirm" style="background:#dc2626;" onclick="deleteBudget()">Radera</button>
+      </div>
     </div>
   </div>
 
-  <!-- SAVINGS -->
-  <div class="card saving full" id="saving-card">
-    <div class="card-header">
-      <div class="dot"></div>
-      <h2>🔵 Sparande</h2>
-    </div>
-    <div class="row-list" id="saving-list"></div>
-    <button class="add-btn" onclick="addSavingRow()">+ Lägg till sparmål</button>
-    <div class="total-row">
-      <span>Totalt sparande</span>
-      <span id="saving-total">0 kr</span>
-    </div>
-    <div class="saving-unallocated" id="saving-unallocated"></div>
-    <div class="saving-warning" id="saving-warning">⚠️ Du överskrider tillgängligt belopp!</div>
-  </div>
+  <!-- New month confirmation modal -->
+  <div class="modal-overlay" id="newmonth-modal">
+    <div class="modal-box" style="max-width:480px;">
+      <h3>📅 Starta ny månad?</h3>
+      <p style="margin-bottom:16px;">Välj vilka poster som ska föras vidare till nästa budget. Inkomster och sparande
+        rensas alltid.</p>
 
-  <!-- EXPORT / NEW MONTH -->
-  <div class="export-area full">
-    <button class="newmonth-btn" onclick="openNewMonthModal()">📅 Ny månad</button>
-    <button class="export-btn" onclick="exportImage()">📸 Spara som bild</button>
-  </div>
+      <div id="newmonth-fixed-section" style="margin-bottom:14px; display:none;">
+        <div
+          style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#dc2626; margin-bottom:8px;">
+          🔴 Fasta utgifter</div>
+        <div id="newmonth-fixed-list"></div>
+      </div>
 
-</div>
+      <div id="newmonth-variable-section" style="margin-bottom:14px; display:none;">
+        <div
+          style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#d97706; margin-bottom:8px;">
+          🟠 Rörliga utgifter</div>
+        <div id="newmonth-variable-list"></div>
+      </div>
 
-<!-- Toast -->
-<div id="toast"></div>
-
-<!-- New month confirmation modal -->
-<div class="modal-overlay" id="newmonth-modal">
-  <div class="modal-box center">
-    <h3>📅 Starta ny månad?</h3>
-    <p>Inkomster, rörliga utgifter och sparande nollställs.<br>
-    <strong>Fasta utgifter behålls.</strong></p>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeNewMonthModal()">Avbryt</button>
-      <button class="modal-confirm" onclick="confirmNewMonth()">Starta ny månad</button>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeNewMonthModal()">Avbryt</button>
+        <button class="modal-confirm" onclick="confirmNewMonth()">Skapa ny budget</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Auth Modal -->
-<div class="modal-overlay" id="auth-modal">
-  <div class="modal-box">
-    <h3>Logga in / Skapa konto</h3>
-    <p>Logga in för att spara din budget i molnet och dela med andra i realtid.</p>
-    
-    <div class="form-group">
-      <label>E-post</label>
-      <input type="email" id="auth-email" placeholder="namn@exempel.se">
-    </div>
-    <div class="form-group">
-      <label>Lösenord</label>
-      <input type="password" id="auth-password" placeholder="Minst 6 tecken">
-    </div>
-    <div class="modal-actions" style="margin-top:10px;">
-      <button class="modal-cancel" onclick="closeAuthModal()">Avbryt</button>
-      <button class="modal-confirm" onclick="handleEmailAuth('login')">Logga in</button>
-      <button class="modal-confirm" style="background:#4b5563" onclick="handleEmailAuth('register')">Skapa konto</button>
-    </div>
-    
-    <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
-    <button class="google-btn" onclick="handleGoogleAuth()">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Fortsätt med Google
-    </button>
-  </div>
-</div>
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-box">
+      <h3>Logga in / Skapa konto</h3>
+      <p>Logga in för att spara din budget i molnet och dela med andra i realtid.</p>
 
-<!-- Share Modal -->
-<div class="modal-overlay" id="share-modal">
-  <div class="modal-box">
-    <h3>Dela Budget</h3>
-    <p>Andra kan gå med i denna budget genom att skriva in din budgetkod nedan.</p>
-    
-    <div class="form-group">
-      <label>Din Budgetkod (Ge denna till andra)</label>
-      <input type="text" id="share-my-id" readonly style="background:#f1f5f9; font-family:monospace; font-weight:bold; letter-spacing:1px; cursor:copy;" onclick="this.select(); document.execCommand('copy'); showToast('Budgets-ID kopierat!');">
-    </div>
-    
-    <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
-    
-    <div class="form-group">
-      <label>Gå med i någon annans budget</label>
-      <input type="text" id="share-join-id" placeholder="Klistra in kod här...">
-    </div>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeShareModal()">Stäng</button>
-      <button class="modal-confirm" onclick="joinBudget()">Gå med</button>
+      <div class="form-group">
+        <label>E-post</label>
+        <input type="email" id="auth-email" placeholder="namn@exempel.se">
+      </div>
+      <div class="form-group">
+        <label>Lösenord</label>
+        <input type="password" id="auth-password" placeholder="Minst 6 tecken">
+      </div>
+      <div class="modal-actions" style="margin-top:10px;">
+        <button class="modal-cancel" onclick="closeAuthModal()">Avbryt</button>
+        <button class="modal-confirm" onclick="handleEmailAuth('login')">Logga in</button>
+        <button class="modal-confirm" style="background:#4b5563" onclick="handleEmailAuth('register')">Skapa
+          konto</button>
+      </div>
+
+      <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
+      <button class="google-btn" onclick="handleGoogleAuth()">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+        </svg>
+        Fortsätt med Google
+      </button>
     </div>
   </div>
-</div>
 
-<!-- Hidden export template -->
-<div id="export-template">
-  <h1>Månadsbudget – Sammanfattning</h1>
-  <div class="exp-date" id="exp-date-text"></div>
-  <div class="exp-section">
-    <h2>Inkomster</h2><div id="exp-income-rows"></div>
-    <div class="exp-total"><span>Total inkomst</span><span id="exp-income-total"></span></div>
-  </div>
-  <div class="exp-section">
-    <h2>Fasta utgifter</h2><div id="exp-fixed-rows"></div>
-    <div class="exp-total"><span>Total fasta</span><span id="exp-fixed-total"></span></div>
-  </div>
-  <div class="exp-section">
-    <h2>Rörliga utgifter</h2><div id="exp-variable-rows"></div>
-    <div class="exp-total"><span>Total rörliga</span><span id="exp-variable-total"></span></div>
-  </div>
-  <div class="exp-result">
-    <div class="exp-result-label">KVAR ATT FÖRDELA</div>
-    <div class="exp-result-amount" id="exp-result-amount"></div>
-  </div>
-  <div class="exp-saving-section" id="exp-saving-section">
-    <h2>Sparande</h2><div id="exp-saving-rows"></div>
-    <div class="exp-total"><span>Totalt sparande</span><span id="exp-saving-total"></span></div>
-  </div>
-</div>
+  <!-- Share Modal -->
+  <div class="modal-overlay" id="share-modal">
+    <div class="modal-box">
+      <h3>Dela Budget</h3>
+      <p>Andra kan gå med i denna budget genom att skriva in din budgetkod nedan.</p>
 
-<script>
-  // ── Firebase Init ──────────────────────────────────────────────
-  const firebaseConfig = {
-    apiKey: "AIzaSyAE9i9wKC3I5KN0-Wk4EZrG-kx19YQ_brQ",
-    authDomain: "manadsbudget-app.firebaseapp.com",
-    projectId: "manadsbudget-app",
-    storageBucket: "manadsbudget-app.firebasestorage.app",
-    messagingSenderId: "910633634669",
-    appId: "1:910633634669:web:5b40984799065bc51c2864",
-    measurementId: "G-W84R57X1RV"
-  };
+      <div class="form-group">
+        <label>Din Budgetkod (Ge denna till andra)</label>
+        <input type="text" id="share-my-id" readonly
+          style="background:#f1f5f9; font-family:monospace; font-weight:bold; letter-spacing:1px; cursor:copy;"
+          onclick="this.select(); document.execCommand('copy'); showToast('Budgets-ID kopierat!');">
+      </div>
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+      <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
 
-  // ── State ──────────────────────────────────────────────────────
-  let state = { income: [], fixed: [], variable: [], saving: [] };
-  let nextId = 1;
-  
-  let currentUser = null;
-  let activeBudgetId = null; // Either user's UID or a shared budget ID
-  let unsubscribeSnapshot = null;
-  let isSyncing = false;     // Prevent local input from triggering save loops
+      <div class="form-group">
+        <label>Gå med i någon annans budget</label>
+        <input type="text" id="share-join-id" placeholder="Klistra in kod här...">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeShareModal()">Stäng</button>
+        <button class="modal-confirm" onclick="joinBudget()">Gå med</button>
+      </div>
+    </div>
+  </div>
 
-  // ── Setup & Auth Observers ─────────────────────────────────────
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if (user) {
-      document.getElementById('btn-login').style.display = 'none';
-      document.getElementById('btn-logout').style.display = 'block';
-      document.getElementById('btn-share').style.display = 'block';
-      document.getElementById('user-info').innerHTML = `Inloggad som: <b>${user.email || 'Google User'}</b>`;
-      document.getElementById('header-sync').style.display = 'block';
-      
-      // Determine which budget to load. Check users collection.
-      db.collection('users').doc(user.uid).get().then(doc => {
-        if (doc.exists && doc.data().activeBudgetId) {
-          listenToBudget(doc.data().activeBudgetId);
+  <!-- Hidden export template -->
+  <div id="export-template">
+    <h1>Månadsbudget – Sammanfattning</h1>
+    <div id="exp-budget-name" style="font-size:1.1rem; font-weight:700; color:#1e293b; margin-bottom:2px;"></div>
+    <div class="exp-date" id="exp-date-text"></div>
+    <div class="exp-section">
+      <h2>Inkomster</h2>
+      <div id="exp-income-rows"></div>
+      <div class="exp-total"><span>Total inkomst</span><span id="exp-income-total"></span></div>
+    </div>
+    <div class="exp-section">
+      <h2>Fasta utgifter</h2>
+      <div id="exp-fixed-rows"></div>
+      <div class="exp-total"><span>Total fasta</span><span id="exp-fixed-total"></span></div>
+    </div>
+    <div class="exp-section">
+      <h2>Rörliga utgifter</h2>
+      <div id="exp-variable-rows"></div>
+      <div class="exp-total"><span>Total rörliga</span><span id="exp-variable-total"></span></div>
+    </div>
+    <div class="exp-result">
+      <div class="exp-result-label">KVAR ATT FÖRDELA</div>
+      <div class="exp-result-amount" id="exp-result-amount"></div>
+    </div>
+    <div class="exp-saving-section" id="exp-saving-section">
+      <h2>Sparande</h2>
+      <div id="exp-saving-rows"></div>
+      <div class="exp-total"><span>Totalt sparande</span><span id="exp-saving-total"></span></div>
+    </div>
+    <div id="exp-unallocated-section"
+      style="margin-top:18px; padding-top:14px; border-top:2px solid #e2e6ea; display:flex; justify-content:space-between; align-items:center;">
+      <span
+        style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:#6b7280; font-weight:600;">Ofördelat
+        kvar</span>
+      <span id="exp-unallocated-amount" style="font-size:1.1rem; font-weight:700;"></span>
+    </div>
+  </div>
+
+  <script>
+    // ── Firebase Init ──────────────────────────────────────────────
+    const firebaseConfig = {
+      apiKey: "AIzaSyAE9i9wKC3I5KN0-Wk4EZrG-kx19YQ_brQ",
+      authDomain: "manadsbudget-app.firebaseapp.com",
+      projectId: "manadsbudget-app",
+      storageBucket: "manadsbudget-app.firebasestorage.app",
+      messagingSenderId: "910633634669",
+      appId: "1:910633634669:web:5b40984799065bc51c2864",
+      measurementId: "G-W84R57X1RV"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ── State ──────────────────────────────────────────────────
+    let state = { income: [], fixed: [], variable: [], saving: [] };
+    let nextId = 1;
+    let budgetMeta = { name: '', status: 'none', comment: '' };
+    let userBudgets = [];
+    let currentUser = null;
+    let activeBudgetId = null;
+    let unsubscribeSnapshot = null;
+    let unsubscribeBudgetsList = null;
+    let isSyncing = false;
+    let nameUpdateTimer, commentUpdateTimer;
+
+    // ── Auth Observer ──────────────────────────────────────
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if (user) {
+        document.getElementById('btn-login').style.display = 'none';
+        document.getElementById('btn-logout').style.display = 'block';
+        document.getElementById('btn-share').style.display = 'block';
+        document.getElementById('user-info').innerHTML = `Inloggad som: <b>${user.email || 'Google User'}</b>`;
+        document.getElementById('meta-header').style.display = 'flex';
+        document.getElementById('eval-card').style.display = 'block';
+        document.getElementById('save-btn').style.display = 'inline-block';
+        document.getElementById('delete-budget-btn').style.display = 'inline-block';
+
+        // Migrate legacy budget (add collaborators field if missing)
+        db.collection('budgets').doc(user.uid).get().then(doc => {
+          if (doc.exists && !doc.data().collaborators) {
+            doc.ref.update({ collaborators: [user.uid], name: 'Min Budget', status: 'none', comment: '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          }
+        });
+
+        // Listen to all budgets the user is part of — ONLY for the dropdown list.
+        // switchBudget is ONLY called during initial load (when budgetReady = false).
+        let budgetReady = false;
+        if (unsubscribeBudgetsList) unsubscribeBudgetsList();
+        unsubscribeBudgetsList = db.collection('budgets')
+          .where('collaborators', 'array-contains', user.uid)
+          .onSnapshot(snapshot => {
+            let list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            list.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+            userBudgets = list;
+            renderBudgetSelector();
+
+            // Only pick an active budget on first load. After that, typing updates the
+            // budget document → this listener fires again, but we do NOT call switchBudget
+            // (which would rip out and rebuild the Firestore listener and re-render everything).
+            if (!budgetReady && !activeBudgetId) {
+              budgetReady = true; // Set SYNC to prevent race condition from re-entrant list listener
+              if (list.length === 0) {
+                createNewBudget('Min första budget');
+              } else {
+                db.collection('users').doc(user.uid).get().then(uDoc => {
+                  const savedId = uDoc.exists && uDoc.data().activeBudgetId;
+                  const target = (savedId && list.find(b => b.id === savedId)) ? savedId : list[0].id;
+                  switchBudget(target);
+                });
+              }
+            }
+          });
+
+      } else {
+        document.getElementById('btn-login').style.display = 'block';
+        document.getElementById('btn-logout').style.display = 'none';
+        document.getElementById('btn-share').style.display = 'none';
+        document.getElementById('user-info').innerHTML = '';
+        document.getElementById('meta-header').style.display = 'none';
+        document.getElementById('eval-card').style.display = 'none';
+        document.getElementById('save-btn').style.display = 'none';
+        document.getElementById('delete-budget-btn').style.display = 'none';
+        activeBudgetId = null;
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
+        if (unsubscribeBudgetsList) unsubscribeBudgetsList();
+        if (!loadState()) prefillDummy();
+      }
+    });
+
+    function createNewBudget(name, fixedToCarry = []) {
+      if (!currentUser) return;
+      const ref = db.collection('budgets').doc();
+      const maxId = fixedToCarry.reduce((m, r) => Math.max(m, r.id || 0), 0);
+      ref.set({
+        name: name || 'Ny Budget', status: 'none', comment: '',
+        income: [], fixed: fixedToCarry, variable: [], saving: [],
+        nextId: maxId + 1,
+        collaborators: [currentUser.uid],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => switchBudget(ref.id));
+    }
+
+    window.switchBudgetSelector = function (val) { if (val !== activeBudgetId) switchBudget(val); };
+
+    function switchBudget(budgetId) {
+      activeBudgetId = budgetId;
+      if (currentUser) db.collection('users').doc(currentUser.uid).set({ activeBudgetId: budgetId }, { merge: true });
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
+      unsubscribeSnapshot = db.collection('budgets').doc(budgetId).onSnapshot(doc => {
+        if (doc.metadata.hasPendingWrites) return;
+        isSyncing = true;
+        if (doc.exists) {
+          const data = doc.data();
+          const newMeta = { name: data.name || '', status: data.status || 'none', comment: data.comment || '' };
+          const cloudState = { income: data.income || [], fixed: data.fixed || [], variable: data.variable || [], saving: data.saving || [] };
+          const sameState = JSON.stringify(cloudState) === JSON.stringify({ income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving });
+          const sameMeta = JSON.stringify(newMeta) === JSON.stringify(budgetMeta);
+          if (!sameState) { state = cloudState; nextId = data.nextId || 1; renderAll(); }
+          if (!sameMeta) { budgetMeta = newMeta; updateMetaUI(); }
         } else {
-          // Default to own budget
-          db.collection('users').doc(user.uid).set({ activeBudgetId: user.uid }, { merge: true });
-          listenToBudget(user.uid);
+          if (state.income.length === 0 && state.fixed.length === 0) prefillDummy();
+          saveToCloud();
+        }
+        isSyncing = false;
+      });
+      renderBudgetSelector();
+    }
+
+    function renderBudgetSelector() {
+      const sel = document.getElementById('budget-selector');
+      if (!sel) return;
+      sel.innerHTML = '';
+      userBudgets.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.textContent = b.name || 'Namnlös budget';
+        if (b.id === activeBudgetId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      // Also update name input if not focused
+      const ni = document.getElementById('budget-name-input');
+      if (ni && document.activeElement !== ni) ni.value = budgetMeta.name;
+    }
+
+    function updateMetaUI() {
+      const ni = document.getElementById('budget-name-input');
+      if (ni && document.activeElement !== ni) ni.value = budgetMeta.name;
+      const ci = document.getElementById('budget-comment');
+      if (ci && document.activeElement !== ci) ci.value = budgetMeta.comment;
+      ['none', 'success', 'failed'].forEach(s => {
+        const b = document.getElementById('btn-status-' + s);
+        if (b) b.className = 'status-btn' + (budgetMeta.status === s ? ' active-' + s : '');
+      });
+    }
+
+    window.openDeleteModal = function () {
+      const name = budgetMeta.name || 'denna budget';
+      document.getElementById('delete-modal-text').textContent = `Vill du permanent radera "${name}"? Detta kan inte ångras.`;
+      document.getElementById('delete-modal').classList.add('open');
+    };
+
+    window.deleteBudget = async function () {
+      if (!currentUser || !activeBudgetId) return;
+      document.getElementById('delete-modal').classList.remove('open');
+      const deletedId = activeBudgetId;
+
+      // Find which budget to switch to (next in list, skip the one being deleted)
+      const remaining = userBudgets.filter(b => b.id !== deletedId);
+
+      if (remaining.length > 0) {
+        // Switch to another budget first, then delete
+        switchBudget(remaining[0].id);
+      } else {
+        // No budgets left — clear state and create a fresh one
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
+        activeBudgetId = null;
+        state = { income: [], fixed: [], variable: [], saving: [] };
+        budgetMeta = { name: '', status: 'none', comment: '' };
+        createNewBudget('Min budget');
+      }
+
+      // Delete the document from Firestore
+      await db.collection('budgets').doc(deletedId).delete();
+      showToast('🗑️ Budget raderad');
+    };
+
+    window.setBudgetStatus = function (status) {
+
+      budgetMeta.status = status;
+      updateMetaUI();
+      if (currentUser && activeBudgetId) {
+        db.collection('budgets').doc(activeBudgetId).update({ status: status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      } else saveState();
+    };
+
+    window.scheduleBudgetNameUpdate = function (val) {
+      budgetMeta.name = val;
+      // Update dropdown immediately (local)
+      userBudgets.forEach(b => { if (b.id === activeBudgetId) b.name = val; });
+      renderBudgetSelector();
+      clearTimeout(nameUpdateTimer);
+      nameUpdateTimer = setTimeout(() => {
+        if (currentUser && activeBudgetId) {
+          db.collection('budgets').doc(activeBudgetId).update({ name: val, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else saveState();
+      }, 600);
+    };
+
+    window.scheduleCommentUpdate = function (val) {
+      budgetMeta.comment = val;
+      clearTimeout(commentUpdateTimer);
+      commentUpdateTimer = setTimeout(() => {
+        if (currentUser && activeBudgetId) {
+          db.collection('budgets').doc(activeBudgetId).update({ comment: val, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else saveState();
+      }, 700);
+    };
+
+
+
+    function saveState() {
+      if (isSyncing) return;
+      if (currentUser && activeBudgetId) {
+        saveToCloud();
+      } else {
+        localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId, budgetMeta }));
+      }
+    }
+
+    function saveToCloud() {
+      if (!activeBudgetId) return;
+      db.collection('budgets').doc(activeBudgetId).set({
+        income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
+        nextId: nextId,
+        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+
+    window.manuallySave = function () {
+      if (!currentUser || !activeBudgetId) return;
+      clearTimeout(saveCloudTimer); // Spola debounce-timern
+      const btn = document.getElementById('save-btn');
+      btn.textContent = '⏳ Sparar...';
+      btn.disabled = true;
+      db.collection('budgets').doc(activeBudgetId).set({
+        income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
+        nextId: nextId,
+        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).then(() => {
+        btn.textContent = '✓ Sparat';
+        btn.classList.add('saved');
+        btn.disabled = false;
+        setTimeout(() => {
+          btn.textContent = '💾 Spara';
+          btn.classList.remove('saved');
+        }, 2000);
+      }).catch(() => {
+        btn.textContent = '💾 Spara';
+        btn.disabled = false;
+        showToast('⚠️ Kunde inte spara. Kontrollera nätverket.');
+      });
+    };
+
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('manadsbudget_v2');
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        state = saved.state;
+        nextId = saved.nextId || 1;
+        budgetMeta = saved.budgetMeta || { name: 'Lokal Budget', status: 'none', comment: '' };
+        updateMetaUI();
+        renderAll();
+        return true;
+      } catch (e) { return false; }
+    }
+
+    function prefillDummy() {
+      state = { income: [], fixed: [], variable: [], saving: [] };
+      const now = new Date();
+      const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+      budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
+      addRow('income', { name: 'Lön', amount: 35000 }, true);
+      addRow('fixed', { name: 'Hyra', amount: 9500 }, true);
+      addRow('fixed', { name: 'Hemförsäkring', amount: 250 }, true);
+      addRow('variable', { name: 'Mat', amount: 3500 }, true);
+      addRow('variable', { name: 'Nöje', amount: 1000 }, true);
+      addSavingRow({ name: 'Buffert', type: 'percent', value: 10 }, true);
+      renderAll();
+      saveState();
+    }
+
+
+    let installPromptEvent = null;
+
+    // Fånga upp install-eventet (Android / Chrome)
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      installPromptEvent = e;
+      showInstallButton();
+    });
+
+    // Göm knappen om appen redan körs som standalone (installerad)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      // Appen är redan installerad — dölj knappen
+    } else {
+      // Kolla om det är iOS Safari (ingen beforeinstallprompt-support)
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+      if (isIOS && isSafari) showInstallButton();
+    }
+
+    function showInstallButton() {
+      const btn = document.getElementById('btn-install');
+      if (btn) btn.style.display = 'inline-block';
+    }
+
+    window.triggerInstall = function () {
+      if (installPromptEvent) {
+        // Android / Chrome: trigga native install-dialog
+        installPromptEvent.prompt();
+        installPromptEvent.userChoice.then(() => {
+          installPromptEvent = null;
+          document.getElementById('btn-install').style.display = 'none';
+        });
+      } else {
+        // iOS: visa steg-för-steg instruktioner
+        document.getElementById('ios-install-modal').classList.add('open');
+      }
+    };
+
+    function init() {
+      updateDateDisplay();
+    }
+
+
+    function updateDateDisplay() {
+      const now = new Date();
+
+      document.getElementById('exp-date-text').textContent = now.toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // ── Auth & Share Functions ─────────────────────────────────────
+    function openAuthModal() { document.getElementById('auth-modal').classList.add('open'); }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+
+    async function handleEmailAuth(mode) {
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      if (!email || !pass) return showToast('Fyll i mejl och lösenord');
+      try {
+        if (mode === 'login') {
+          await auth.signInWithEmailAndPassword(email, pass);
+          showToast('Inloggad!');
+        } else {
+          await auth.createUserWithEmailAndPassword(email, pass);
+          showToast('Konto skapat!');
+        }
+        closeAuthModal();
+      } catch (e) { showToast('Fel: ' + e.message); }
+    }
+
+    async function handleGoogleAuth() {
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(provider);
+        closeAuthModal();
+        showToast('Inloggad med Google!');
+      } catch (e) { showToast('Inloggning avbröts'); }
+    }
+
+    function logout() {
+      auth.signOut();
+      showToast('Utloggad');
+    }
+
+    function openShareModal() {
+      document.getElementById('share-my-id').value = activeBudgetId || 'Ingen budget vald';
+      document.getElementById('share-join-id').value = '';
+      document.getElementById('share-modal').classList.add('open');
+    }
+    function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
+
+    function joinBudget() {
+      const newId = document.getElementById('share-join-id').value.trim();
+      if (!newId) return;
+      if (!currentUser) return showToast('Du måste vara inloggad');
+
+      // Check if budget exists, then add user to collaborators and switch to it
+      db.collection('budgets').doc(newId).get().then(doc => {
+        if (doc.exists) {
+          // Add current user to the budget's collaborators list (so it shows in their dropdown)
+          doc.ref.update({
+            collaborators: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+          }).then(() => {
+            // Save as active budget in user's profile
+            db.collection('users').doc(currentUser.uid).set({ activeBudgetId: newId }, { merge: true });
+            closeShareModal();
+            showToast('Gick med i delad budget!');
+            // Switch to the shared budget immediately
+            switchBudget(newId);
+          });
+        } else {
+          showToast('Hittade ingen budget med den koden');
         }
       });
-    } else {
-      document.getElementById('btn-login').style.display = 'block';
-      document.getElementById('btn-logout').style.display = 'none';
-      document.getElementById('btn-share').style.display = 'none';
-      document.getElementById('user-info').innerHTML = '';
-      document.getElementById('header-sync').style.display = 'none';
-      activeBudgetId = null;
-      if (unsubscribeSnapshot) unsubscribeSnapshot();
-      
-      // Load from local storage
-      if (!loadState()) {
-        prefillDummy();
-      }
     }
-  });
 
-  function listenToBudget(budgetId) {
-    if (unsubscribeSnapshot) unsubscribeSnapshot();
-    activeBudgetId = budgetId;
-    
-    unsubscribeSnapshot = db.collection('budgets').doc(budgetId).onSnapshot(doc => {
-      isSyncing = true;
-      if (doc.exists) {
-        const data = doc.data();
-        state = {
-          income: data.income || [],
-          fixed: data.fixed || [],
-          variable: data.variable || [],
-          saving: data.saving || []
-        };
-        nextId = data.nextId || 1;
-      } else {
-        // First time cloud creation, push current local state if any, else empty
-        if (state.income.length === 0 && state.fixed.length === 0) prefillDummy();
-        saveToCloud();
-      }
-      renderAll();
-      isSyncing = false;
-    });
-  }
-
-  function saveState() {
-    if (isSyncing) return; // Don't trigger saves from incoming cloud updates
-
-    if (currentUser && activeBudgetId) {
-      saveToCloud();
-    } else {
-      localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId }));
+    // ── Core Logistics ─────────────────────────────────────────────
+    function addRow(section, prefill = {}, skipSave = false) {
+      const id = nextId++;
+      const item = { id, name: prefill.name || '', amount: prefill.amount || '' };
+      state[section].push(item);
+      if (!skipSave) { renderAll(); saveState(); }
     }
-  }
-
-  function saveToCloud() {
-    if(!activeBudgetId) return;
-    db.collection('budgets').doc(activeBudgetId).set({
-      income: state.income,
-      fixed: state.fixed,
-      variable: state.variable,
-      saving: state.saving,
-      nextId: nextId,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-
-  function loadState() {
-    try {
-      const raw = localStorage.getItem('manadsbudget_v2');
-      if (!raw) return false;
-      const saved = JSON.parse(raw);
-      state  = saved.state;
-      nextId = saved.nextId || 1;
-      renderAll();
-      return true;
-    } catch(e) { return false; }
-  }
-
-  function prefillDummy() {
-    state = { income: [], fixed: [], variable: [], saving: [] };
-    addRow('income',   { name:'Lön',          amount: 35000 }, true);
-    addRow('fixed',    { name:'Hyra',          amount: 9500  }, true);
-    addRow('fixed',    { name:'Hemförsäkring', amount: 250   }, true);
-    addRow('variable', { name:'Mat',           amount: 3500  }, true);
-    addRow('variable', { name:'Nöje',          amount: 1000  }, true);
-    addSavingRow({ name:'Buffert', type:'percent', value: 10 }, true);
-    saveState();
-  }
-
-  function init() {
-    updateDateDisplay();
-  }
-
-  function updateDateDisplay() {
-    const now = new Date();
-    document.getElementById('header-date').textContent = now.toLocaleDateString('sv-SE', { year:'numeric', month:'long' });
-    document.getElementById('exp-date-text').textContent = now.toLocaleDateString('sv-SE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  }
-
-  // ── Auth & Share Functions ─────────────────────────────────────
-  function openAuthModal()  { document.getElementById('auth-modal').classList.add('open'); }
-  function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
-  
-  async function handleEmailAuth(mode) {
-    const email = document.getElementById('auth-email').value;
-    const pass = document.getElementById('auth-password').value;
-    if(!email || !pass) return showToast('Fyll i mejl och lösenord');
-    try {
-      if(mode === 'login') {
-        await auth.signInWithEmailAndPassword(email, pass);
-        showToast('Inloggad!');
-      } else {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        showToast('Konto skapat!');
+    function addSavingRow(prefill = {}, skipSave = false) {
+      const id = nextId++;
+      const item = { id, name: prefill.name || '', type: prefill.type || 'percent', value: prefill.value || '' };
+      state.saving.push(item);
+      if (!skipSave) { renderAll(); saveState(); }
+    }
+    function removeRow(section, id) {
+      state[section] = state[section].filter(r => r.id !== id);
+      renderAll(); saveState();
+    }
+    let saveCloudTimer = null;
+    window.triggerUpdateField = function (section, id, field, value) {
+      const item = state[section].find(r => r.id === id);
+      if (item) item[field] = value;
+      recalc();
+      // Spara till localStorage direkt (ingen nätverksfördröjning)
+      if (!currentUser) {
+        localStorage.setItem('manadsbudget_v2', JSON.stringify({ state, nextId, budgetMeta }));
+        return;
       }
-      closeAuthModal();
-    } catch(e) { showToast('Fel: ' + e.message); }
-  }
+      // Debounca Firestore-skrivning: skicka bara till servern efter 900ms tystnad.
+      // Det förhindrar att varje tangent triggar en snapshot → renderAll → fokusförlust.
+      clearTimeout(saveCloudTimer);
+      saveCloudTimer = setTimeout(() => { saveToCloud(); }, 900);
+    }
 
-  async function handleGoogleAuth() {
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      await auth.signInWithPopup(provider);
-      closeAuthModal();
-      showToast('Inloggad med Google!');
-    } catch(e) { showToast('Inloggning avbröts'); }
-  }
-
-  function logout() {
-    auth.signOut();
-    showToast('Utloggad');
-  }
-
-  function openShareModal() {
-    document.getElementById('share-my-id').value = activeBudgetId || 'Ingen budget vald';
-    document.getElementById('share-join-id').value = '';
-    document.getElementById('share-modal').classList.add('open');
-  }
-  function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
-
-  function joinBudget() {
-    const newId = document.getElementById('share-join-id').value.trim();
-    if(!newId) return;
-    if(!currentUser) return showToast('Du måste vara inloggad');
-    
-    // Check if budget exists
-    db.collection('budgets').doc(newId).get().then(doc => {
-      if(doc.exists) {
-        // Point user to new budget
-        db.collection('users').doc(currentUser.uid).set({ activeBudgetId: newId }, { merge: true });
-        closeShareModal();
-        showToast('Gick med i delad budget!');
-      } else {
-        showToast('Hittade ingen budget med den koden');
+    function renderAll() {
+      // Spara fokuserat fält före omrendering
+      const focused = document.activeElement;
+      let focusKey = null, selStart = 0, selEnd = 0;
+      if (focused && focused.dataset && focused.dataset.key) {
+        focusKey = focused.dataset.key;
+        try { selStart = focused.selectionStart || 0; selEnd = focused.selectionEnd || 0; } catch (e) { }
       }
-    });
-  }
 
-  // ── Core Logistics ─────────────────────────────────────────────
-  function addRow(section, prefill = {}, skipSave = false) {
-    const id = nextId++;
-    const item = { id, name: prefill.name || '', amount: prefill.amount || '' };
-    state[section].push(item);
-    if(!skipSave) { renderAll(); saveState(); }
-  }
-  function addSavingRow(prefill = {}, skipSave = false) {
-    const id = nextId++;
-    const item = { id, name: prefill.name || '', type: prefill.type || 'percent', value: prefill.value || '' };
-    state.saving.push(item);
-    if(!skipSave) { renderAll(); saveState(); }
-  }
-  function removeRow(section, id) {
-    state[section] = state[section].filter(r => r.id !== id);
-    renderAll(); saveState();
-  }
-  window.triggerUpdateField = function(section, id, field, value) {
-    const item = state[section].find(r => r.id === id);
-    if (item) item[field] = value;
-    recalc();
-    saveState();
-  }
+      ['income', 'fixed', 'variable'].forEach(s => renderSection(s));
+      renderSaving();
+      recalc();
 
-  function renderAll() {
-    ['income','fixed','variable'].forEach(s => renderSection(s));
-    renderSaving();
-    recalc();
-  }
-
-  function renderSection(section) {
-    const list = document.getElementById(section + '-list');
-    list.innerHTML = '';
-    state[section].forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'entry-row normal';
-      row.innerHTML = `
-        <input type="text" placeholder="Namn" value="${escH(item.name)}" oninput="triggerUpdateField('${section}', ${item.id}, 'name', this.value)" />
-        <input type="number" placeholder="0" min="0" value="${item.amount}" oninput="triggerUpdateField('${section}', ${item.id}, 'amount', this.value)" />
-        <button class="del-btn" onclick="removeRow('${section}', ${item.id})">✕</button>
-      `;
-      list.appendChild(row);
-    });
-  }
-
-  function renderSaving() {
-    const list = document.getElementById('saving-list');
-    list.innerHTML = '';
-    const available = getAvailable();
-    state.saving.forEach(item => {
-      const calculated = calcSaving(item, available);
-      const row = document.createElement('div');
-      row.className = 'entry-row saving-row';
-      row.innerHTML = `
-        <input type="text" placeholder="Sparmål" value="${escH(item.name)}" oninput="triggerUpdateField('saving', ${item.id}, 'name', this.value)" />
-        <select onchange="triggerUpdateField('saving', ${item.id}, 'type', this.value)">
-          <option value="percent" ${item.type === 'percent' ? 'selected' : ''}>%</option>
-          <option value="fixed"   ${item.type === 'fixed'   ? 'selected' : ''}>kr</option>
-        </select>
-        <input type="number" placeholder="0" min="0" value="${item.value}" oninput="triggerUpdateField('saving', ${item.id}, 'value', this.value)" />
-        <button class="del-btn" onclick="removeRow('saving', ${item.id})">✕</button>
-      `;
-      const calc = document.createElement('div');
-      calc.className = 'saving-calc';
-      if (available > 0 && (parseFloat(item.value) || 0) > 0) {
-        calc.textContent = '= ' + fmt(calculated);
-      }
-      list.appendChild(row);
-      list.appendChild(calc);
-    });
-  }
-
-  function fmt(n) { return new Intl.NumberFormat('sv-SE', { style:'currency', currency:'SEK', maximumFractionDigits: 0 }).format(n); }
-  function sumSection(arr) { return arr.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0); }
-  function getAvailable() { return sumSection(state.income) - sumSection(state.fixed) - sumSection(state.variable); }
-  function calcSaving(item, available) {
-    const v = parseFloat(item.value) || 0;
-    if (item.type === 'percent') return Math.max(0, available) * v / 100;
-    return v;
-  }
-  function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  function recalc() {
-    const income   = sumSection(state.income);
-    const fixed    = sumSection(state.fixed);
-    const variable = sumSection(state.variable);
-    const available = income - fixed - variable;
-    const available_pos = Math.max(0, available);
-
-    document.getElementById('income-total').textContent   = fmt(income);
-    document.getElementById('fixed-total').textContent    = fmt(fixed);
-    document.getElementById('variable-total').textContent = fmt(variable);
-
-    const resEl = document.getElementById('result-amount');
-    resEl.textContent = fmt(available);
-    resEl.className = 'result-amount ' + (available >= 0 ? 'positive' : 'negative');
-
-    document.getElementById('bd-income').textContent   = fmt(income);
-    document.getElementById('bd-fixed').textContent    = fmt(fixed);
-    document.getElementById('bd-variable').textContent = fmt(variable);
-
-    let savingTotal = 0;
-    state.saving.forEach(item => { savingTotal += calcSaving(item, available_pos); });
-    document.getElementById('saving-total').textContent = fmt(savingTotal);
-
-    const unalloc = available_pos - savingTotal;
-    const unallocEl = document.getElementById('saving-unallocated');
-    const warnEl    = document.getElementById('saving-warning');
-
-    if (available_pos > 0) unallocEl.innerHTML = `Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong>`;
-    else unallocEl.innerHTML = '';
-
-    if (savingTotal > available_pos && available_pos > 0) warnEl.classList.add('over');
-    else warnEl.classList.remove('over');
-    
-    // Update live calculations in DOM without losing focus on inputs
-    const calcEls = document.querySelectorAll('.saving-calc');
-    state.saving.forEach((item, i) => {
-      if(calcEls[i]) {
-        const calculated = calcSaving(item, available_pos);
-        if (available_pos > 0 && (parseFloat(item.value) || 0) > 0) {
-          calcEls[i].textContent = '= ' + fmt(calculated);
-        } else {
-          calcEls[i].textContent = '';
+      // Återställ fokus och markering efter omrendering
+      if (focusKey) {
+        const newEl = document.querySelector(`[data-key="${focusKey}"]`);
+        if (newEl) {
+          newEl.focus();
+          try { newEl.setSelectionRange(selStart, selEnd); } catch (e) { }
         }
       }
-    });
-  }
+    }
 
-  // ── New month ─────────────────────────────────────────────────
-  function openNewMonthModal()  { document.getElementById('newmonth-modal').classList.add('open'); }
-  function closeNewMonthModal() { document.getElementById('newmonth-modal').classList.remove('open'); }
+    function renderSection(section) {
+      const list = document.getElementById(section + '-list');
+      list.innerHTML = '';
+      state[section].forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'entry-row normal';
+        row.innerHTML = `
+        <input type="text" data-key="${section}-${item.id}-name" placeholder="Namn" value="${escH(item.name)}" oninput="triggerUpdateField('${section}', ${item.id}, 'name', this.value)" />
+        <input type="text" inputmode="decimal" class="num-input" data-key="${section}-${item.id}-amount" placeholder="0" value="${escH(String(item.amount))}" oninput="triggerUpdateField('${section}', ${item.id}, 'amount', this.value)" />
+        <button class="del-btn" onclick="removeRow('${section}', ${item.id})">✕</button>
+      `;
+        list.appendChild(row);
+      });
+    }
 
-  function confirmNewMonth() {
-    closeNewMonthModal();
-    state.income   = [];
-    state.variable = [];
-    state.saving   = [];
-    state.fixed = state.fixed.map(r => ({ ...r }));
-    renderAll();
-    saveState();
-    updateDateDisplay();
-    showToast('✅ Ny månad startad – fasta utgifter behållna!');
-  }
+    function renderSaving() {
+      const list = document.getElementById('saving-list');
+      list.innerHTML = '';
+      const available = getAvailable();
+      state.saving.forEach(item => {
+        const calculated = calcSaving(item, available);
+        const row = document.createElement('div');
+        row.className = 'entry-row saving-row';
+        row.innerHTML = `
+        <input type="text" data-key="saving-${item.id}-name" placeholder="Sparmål" value="${escH(item.name)}" oninput="triggerUpdateField('saving', ${item.id}, 'name', this.value)" />
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
+        <select data-key="saving-${item.id}-type" onchange="triggerUpdateField('saving', ${item.id}, 'type', this.value)">
+          <option value="percent" ${item.type === 'percent' ? 'selected' : ''}>%</option>
+          <option value="fixed"   ${item.type === 'fixed' ? 'selected' : ''}>kr</option>
+        </select>
+        <input type="text" inputmode="decimal" class="num-input" data-key="saving-${item.id}-value" placeholder="0" value="${escH(String(item.value))}" oninput="triggerUpdateField('saving', ${item.id}, 'value', this.value)" />
+        <button class="del-btn" onclick="removeRow('saving', ${item.id})">✕</button>
+      `;
+        const calc = document.createElement('div');
+        calc.className = 'saving-calc';
+        if (available > 0 && (parseFloat(item.value) || 0) > 0) {
+          calc.textContent = '= ' + fmt(calculated);
+        }
+        list.appendChild(row);
+        list.appendChild(calc);
+      });
+    }
 
-  // ── Export as PNG ──────────────────────────────────────────────
-  async function exportImage() {
-    const available = getAvailable();
-    const available_pos = Math.max(0, available);
+    function fmt(n) { return new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(n); }
+    function sumSection(arr) { return arr.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0); }
+    function getAvailable() { return sumSection(state.income) - sumSection(state.fixed) - sumSection(state.variable); }
+    function calcSaving(item, available) {
+      const v = parseFloat(item.value) || 0;
+      if (item.type === 'percent') return Math.max(0, available) * v / 100;
+      return v;
+    }
+    function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-    fillExpRows('exp-income-rows', state.income);
-    fillExpRows('exp-fixed-rows', state.fixed);
-    fillExpRows('exp-variable-rows', state.variable);
+    function recalc() {
+      const income = sumSection(state.income);
+      const fixed = sumSection(state.fixed);
+      const variable = sumSection(state.variable);
+      const available = income - fixed - variable;
+      const available_pos = Math.max(0, available);
 
-    document.getElementById('exp-income-total').textContent   = fmt(sumSection(state.income));
-    document.getElementById('exp-fixed-total').textContent    = fmt(sumSection(state.fixed));
-    document.getElementById('exp-variable-total').textContent = fmt(sumSection(state.variable));
+      document.getElementById('income-total').textContent = fmt(income);
+      document.getElementById('fixed-total').textContent = fmt(fixed);
+      document.getElementById('variable-total').textContent = fmt(variable);
 
-    const resEl = document.getElementById('exp-result-amount');
-    resEl.textContent = fmt(available);
-    resEl.className = 'exp-result-amount ' + (available >= 0 ? 'positive' : 'negative');
+      const resEl = document.getElementById('result-amount');
+      resEl.textContent = fmt(available);
+      resEl.className = 'result-amount ' + (available >= 0 ? 'positive' : 'negative');
 
-    const savRows = document.getElementById('exp-saving-rows');
-    savRows.innerHTML = '';
-    let savTotal = 0;
-    state.saving.forEach(item => {
-      const calc = calcSaving(item, available_pos);
-      savTotal += calc;
-      const row = document.createElement('div');
-      row.className = 'exp-row';
-      const typeLabel = item.type === 'percent' ? `${item.value}%` : '';
-      row.innerHTML = `<span>${escH(item.name)} ${typeLabel}</span><span>${fmt(calc)}</span>`;
-      savRows.appendChild(row);
-    });
-    document.getElementById('exp-saving-total').textContent = fmt(savTotal);
+      document.getElementById('bd-income').textContent = fmt(income);
+      document.getElementById('bd-fixed').textContent = fmt(fixed);
+      document.getElementById('bd-variable').textContent = fmt(variable);
 
-    const tpl = document.getElementById('export-template');
-    tpl.style.left = '-9999px';
+      let savingTotal = 0;
+      state.saving.forEach(item => { savingTotal += calcSaving(item, available_pos); });
+      document.getElementById('saving-total').textContent = fmt(savingTotal);
 
-    const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-    const link = document.createElement('a');
-    const now  = new Date();
-    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-    link.download = `manadsbudget-${dateStr}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }
+      const unalloc = available_pos - savingTotal;
+      const unallocEl = document.getElementById('saving-unallocated');
+      const warnEl = document.getElementById('saving-warning');
 
-  function fillExpRows(containerId, arr) {
-    const el = document.getElementById(containerId);
-    el.innerHTML = '';
-    arr.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'exp-row';
-      row.innerHTML = `<span>${escH(item.name) || '–'}</span><span>${fmt(parseFloat(item.amount)||0)}</span>`;
-      el.appendChild(row);
-    });
-    if (arr.length === 0) el.innerHTML = '<div class="exp-row" style="color:#9ca3af"><span>–</span><span>0 kr</span></div>';
-  }
+      if (available_pos > 0) unallocEl.innerHTML = `Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong>`;
+      else unallocEl.innerHTML = '';
 
-  init();
+      if (savingTotal > available_pos && available_pos > 0) warnEl.classList.add('over');
+      else warnEl.classList.remove('over');
 
-  // ── Service Worker ─────────────────────────────────────────────
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
-  }
-</script>
+      // Update live calculations in DOM without losing focus on inputs
+      const calcEls = document.querySelectorAll('.saving-calc');
+      state.saving.forEach((item, i) => {
+        if (calcEls[i]) {
+          const calculated = calcSaving(item, available_pos);
+          if (available_pos > 0 && (parseFloat(item.value) || 0) > 0) {
+            calcEls[i].textContent = '= ' + fmt(calculated);
+          } else {
+            calcEls[i].textContent = '';
+          }
+        }
+      });
+    }
+
+    // ── New month ─────────────────────────────────────────────────
+    function openNewMonthModal() {
+      // Build carry-over checklists
+      function buildList(containerId, sectionId, items, checkedByDefault) {
+        const list = document.getElementById(containerId);
+        const section = document.getElementById(sectionId);
+        list.innerHTML = '';
+        if (items.length === 0) { section.style.display = 'none'; return; }
+        section.style.display = 'block';
+        items.forEach(item => {
+          const label = document.createElement('label');
+          label.style.cssText = 'display:flex; align-items:center; gap:10px; padding:7px 4px; font-size:0.9rem; cursor:pointer; border-bottom:1px solid #f1f5f9;';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.dataset.id = item.id;
+          cb.checked = checkedByDefault;
+          cb.style.cssText = 'width:17px; height:17px; cursor:pointer; flex-shrink:0;';
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = item.name || '(namnlös)';
+          nameSpan.style.flex = '1';
+          const amtSpan = document.createElement('span');
+          amtSpan.textContent = item.amount ? new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(parseFloat(item.amount)) : '';
+          amtSpan.style.color = '#6b7280';
+          label.appendChild(cb);
+          label.appendChild(nameSpan);
+          label.appendChild(amtSpan);
+          list.appendChild(label);
+        });
+      }
+      buildList('newmonth-fixed-list', 'newmonth-fixed-section', state.fixed, true);
+      buildList('newmonth-variable-list', 'newmonth-variable-section', state.variable, false);
+      document.getElementById('newmonth-modal').classList.add('open');
+    }
+    function closeNewMonthModal() { document.getElementById('newmonth-modal').classList.remove('open'); }
+
+    function confirmNewMonth() {
+      function getChecked(listId, sourceArr) {
+        const checkboxes = document.querySelectorAll('#' + listId + ' input[type=checkbox]');
+        const selectedIds = new Set([...checkboxes].filter(cb => cb.checked).map(cb => Number(cb.dataset.id)));
+        return sourceArr.filter(r => selectedIds.has(r.id)).map(r => ({ ...r }));
+      }
+      const fixedToKeep = getChecked('newmonth-fixed-list', state.fixed);
+      const variableToKeep = getChecked('newmonth-variable-list', state.variable);
+      const rowsToCarry = [...fixedToKeep, ...variableToKeep].map(r => ({ ...r }));
+
+      closeNewMonthModal();
+
+      if (currentUser) {
+        const now = new Date();
+        now.setMonth(now.getMonth() + 1);
+        const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+        const capName = name.charAt(0).toUpperCase() + name.slice(1);
+        // createNewBudget expects fixedToCarry — we put selected fixed there, variable go into variable
+        const ref = db.collection('budgets').doc();
+        const maxId = rowsToCarry.reduce((m, r) => Math.max(m, r.id || 0), 0);
+        ref.set({
+          name: capName, status: 'none', comment: '',
+          income: [],
+          fixed: fixedToKeep,
+          variable: variableToKeep,
+          saving: [],
+          nextId: maxId + 1,
+          collaborators: [currentUser.uid],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => switchBudget(ref.id));
+        showToast('✅ Ny budget skapad: ' + capName);
+      } else {
+        state.income = []; state.saving = [];
+        state.fixed = fixedToKeep;
+        state.variable = variableToKeep;
+        const now = new Date();
+        now.setMonth(now.getMonth() + 1);
+        const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
+        budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
+        renderAll(); updateMetaUI(); saveState(); updateDateDisplay();
+        showToast('✅ Ny månad startad!');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ── Export as PNG ──────────────────────────────────────────────
+    async function exportImage() {
+      const available = getAvailable();
+      const available_pos = Math.max(0, available);
+
+      fillExpRows('exp-income-rows', state.income);
+      fillExpRows('exp-fixed-rows', state.fixed);
+      fillExpRows('exp-variable-rows', state.variable);
+
+      // Budgetnamn
+      const nameEl = document.getElementById('exp-budget-name');
+      nameEl.textContent = budgetMeta.name || '';
+      nameEl.style.display = budgetMeta.name ? 'block' : 'none';
+
+      document.getElementById('exp-income-total').textContent = fmt(sumSection(state.income));
+
+      document.getElementById('exp-fixed-total').textContent = fmt(sumSection(state.fixed));
+      document.getElementById('exp-variable-total').textContent = fmt(sumSection(state.variable));
+
+      const resEl = document.getElementById('exp-result-amount');
+      resEl.textContent = fmt(available);
+      resEl.className = 'exp-result-amount ' + (available >= 0 ? 'positive' : 'negative');
+
+      const savRows = document.getElementById('exp-saving-rows');
+      savRows.innerHTML = '';
+      let savTotal = 0;
+      state.saving.forEach(item => {
+        const calc = calcSaving(item, available_pos);
+        savTotal += calc;
+        const row = document.createElement('div');
+        row.className = 'exp-row';
+        const typeLabel = item.type === 'percent' ? `${item.value}%` : '';
+        row.innerHTML = `<span>${escH(item.name)} ${typeLabel}</span><span>${fmt(calc)}</span>`;
+        savRows.appendChild(row);
+      });
+      document.getElementById('exp-saving-total').textContent = fmt(savTotal);
+
+      // Ofördelat kvar
+      const unalloc = Math.max(0, available_pos - savTotal);
+      const unallocEl = document.getElementById('exp-unallocated-amount');
+      unallocEl.textContent = fmt(unalloc);
+      unallocEl.style.color = unalloc > 0 ? '#16a34a' : '#6b7280';
+      document.getElementById('exp-unallocated-section').style.display = state.saving.length > 0 ? 'flex' : 'none';
+
+      const tpl = document.getElementById('export-template');
+      tpl.style.left = '-9999px';
+
+      const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const fileName = `manadsbudget-${dateStr}.png`;
+
+      // Försök spara till kamerarulle via Web Share API (iOS / Android)
+      // Faller tillbaka på vanlig nedladdning om delning inte stöds
+      canvas.toBlob(async (blob) => {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fileName, { type: 'image/png' })] })) {
+          try {
+            await navigator.share({
+              files: [new File([blob], fileName, { type: 'image/png' })],
+              title: 'Månadsbudget'
+            });
+          } catch (e) {
+            if (e.name !== 'AbortError') {
+              // Användaren avbröt — inget fel
+              const link = document.createElement('a');
+              link.download = fileName;
+              link.href = URL.createObjectURL(blob);
+              link.click();
+            }
+          }
+        } else {
+          // Desktop: ladda ner som fil
+          const link = document.createElement('a');
+          link.download = fileName;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+        }
+      }, 'image/png');
+    }
+
+    function fillExpRows(containerId, arr) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      arr.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'exp-row';
+        row.innerHTML = `<span>${escH(item.name) || '–'}</span><span>${fmt(parseFloat(item.amount) || 0)}</span>`;
+        el.appendChild(row);
+      });
+      if (arr.length === 0) el.innerHTML = '<div class="exp-row" style="color:#9ca3af"><span>–</span><span>0 kr</span></div>';
+    }
+
+    init();
+
+    // ── Service Worker ─────────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => { });
+      });
+    }
+  </script>
 </body>
+
 </html>
