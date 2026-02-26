@@ -198,6 +198,20 @@
       border-color: #94a3b8;
     }
 
+    .collab-badge {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #0369a1;
+      background: #e0f2fe;
+      border: 1.5px solid #bae6fd;
+      border-radius: 20px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+
     /* Auth & Share UI */
     .top-bar {
       display: flex;
@@ -863,6 +877,7 @@
       <select id="budget-selector" onchange="switchBudgetSelector(this.value)" class="budget-select"></select>
       <input type="text" id="budget-name-input" oninput="scheduleBudgetNameUpdate(this.value)"
         placeholder="Namnge budgeten..." class="budget-name-input" />
+      <span class="collab-badge" id="collab-badge">👥 <span id="collab-count"></span></span>
     </div>
   </header>
 
@@ -1252,6 +1267,18 @@
           const sameMeta = JSON.stringify(newMeta) === JSON.stringify(budgetMeta);
           if (!sameState) { state = cloudState; nextId = data.nextId || 1; renderAll(); }
           if (!sameMeta) { budgetMeta = newMeta; updateMetaUI(); }
+          // Update collaborator badge
+          const collabs = data.collaborators || [];
+          const badge = document.getElementById('collab-badge');
+          const countEl = document.getElementById('collab-count');
+          if (badge && countEl) {
+            if (collabs.length > 1) {
+              countEl.textContent = collabs.length + ' användare';
+              badge.style.display = 'flex';
+            } else {
+              badge.style.display = 'none';
+            }
+          }
         } else {
           if (state.income.length === 0 && state.fixed.length === 0) prefillDummy();
           saveToCloud();
@@ -1888,7 +1915,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v3.7</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v3.8</footer>
 
 </body>
 
