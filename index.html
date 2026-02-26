@@ -1148,6 +1148,10 @@
         <button class="modal-confirm" style="background:#4b5563" onclick="handleEmailAuth('register')">Skapa
           konto</button>
       </div>
+      <div style="text-align:center; margin-top:12px;">
+        <span onclick="resetPassword()"
+          style="font-size:0.82rem; color:#0369a1; cursor:pointer; text-decoration:underline;">Glömt lösenord?</span>
+      </div>
 
       <hr style="margin:20px 0; border:0; border-top:1px solid #e2e6ea;">
       <button class="google-btn" onclick="handleGoogleAuth()">
@@ -1638,6 +1642,16 @@
       } catch (e) { showToast('Inloggning avbröts'); }
     }
 
+    async function resetPassword() {
+      const email = document.getElementById('auth-email').value.trim();
+      if (!email) return showToast('Fyll i din e-postadress först');
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showToast('✅ Återställningslänk skickad till ' + email);
+        closeAuthModal();
+      } catch (e) { showToast('Kunde inte skicka: ' + e.message); }
+    }
+
     function logout() {
       auth.signOut();
       showToast('Utloggad');
@@ -2103,7 +2117,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v4.0</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;·&nbsp; v4.1</footer>
 
 </body>
 
