@@ -53,6 +53,33 @@
       --shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     }
 
+    /* Modern Theme Overrides */
+    :root.theme-modern {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --border: #e5e5e5;
+      --text: #000000;
+      --muted: #6b7280;
+      --shadow: none;
+      --radius: 4px;
+
+      --income-color: #000000;
+      --income-light: #ffffff;
+      --income-border: #000000;
+
+      --fixed-color: #000000;
+      --fixed-light: #ffffff;
+      --fixed-border: #000000;
+
+      --variable-color: #000000;
+      --variable-light: #ffffff;
+      --variable-border: #000000;
+
+      --saving-color: #000000;
+      --saving-light: #ffffff;
+      --saving-border: #000000;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -296,6 +323,12 @@
       flex-shrink: 0;
     }
 
+    /* Hide colored dots in modern theme, or make them black squares */
+    :root.theme-modern .card-header .dot {
+      border-radius: 2px;
+      background: #000 !important;
+    }
+
     .card-header h2 {
       font-size: 0.95rem;
       font-weight: 600;
@@ -460,6 +493,18 @@
       transition: opacity 0.15s;
     }
 
+    :root.theme-modern .add-btn {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      opacity: 1;
+    }
+
+    :root.theme-modern .add-btn:hover {
+      background: #f3f4f6 !important;
+    }
+
     .add-btn:hover {
       opacity: 1;
     }
@@ -500,6 +545,11 @@
 
     .result-amount.negative {
       color: var(--fixed-color);
+    }
+
+    :root.theme-modern .result-amount.positive,
+    :root.theme-modern .result-amount.negative {
+      color: #000000;
     }
 
     .result-breakdown {
@@ -942,6 +992,13 @@
         budget</button>
       <button class="btn-sm" id="btn-profile" onclick="openProfileModal()" style="display:none;">👤 Profil</button>
       <button class="btn-sm" id="btn-logout" onclick="logout()" style="display:none;">Logga ut</button>
+
+      <!-- Theme Switcher -->
+      <select id="theme-selector" onchange="toggleTheme(this.value)" class="btn-sm"
+        style="cursor:pointer; padding:5px 8px; width:auto;">
+        <option value="standard">🎨 Standard</option>
+        <option value="modern">◼️ Modern</option>
+      </select>
     </div>
   </div>
 
@@ -2088,6 +2145,20 @@
       if (arr.length === 0) el.innerHTML = '<div class="exp-row" style="color:#9ca3af"><span>–</span><span>0 kr</span></div>';
     }
 
+    function toggleTheme(themeName) {
+      if (themeName === 'modern') {
+        document.documentElement.classList.add('theme-modern');
+      } else {
+        document.documentElement.classList.remove('theme-modern');
+      }
+      localStorage.setItem('app_theme', themeName);
+    }
+
+    // Apply theme on load
+    const savedTheme = localStorage.getItem('app_theme') || 'standard';
+    document.getElementById('theme-selector').value = savedTheme;
+    toggleTheme(savedTheme);
+
     init();
 
     // ── Service Worker ─────────────────────────────────────────────
@@ -2097,7 +2168,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.9.1</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.10</footer>
 
 </body>
 
