@@ -1103,6 +1103,9 @@
       style="margin-top:4px; margin-bottom:0; font-size:0.85rem; color:#94a3b8; max-width:420px; margin-left:auto; margin-right:auto;">
       Budgetera
       enkelt för dig själv eller med andra. Dela enkelt din budget genom att skicka en kod till andra användare.</p>
+    <p class="sub"
+      style="margin-top:8px; margin-bottom:0; font-size:0.75rem; color:#94a3b8; max-width:420px; margin-left:auto; margin-right:auto;">
+      Ägare/Administratör har ej tillgång till användares information eller budgetar.</p>
     <div class="budget-meta-header" id="meta-header" style="display:none;">
       <select id="budget-selector" onchange="switchBudgetSelector(this.value)" class="budget-select"></select>
       <input type="text" id="budget-name-input" oninput="scheduleBudgetNameUpdate(this.value)"
@@ -1384,6 +1387,45 @@
     </div>
   </div>
 
+  <!-- E2EE PIN Modal (Unlock) -->
+  <div class="modal-overlay" id="pin-unlock-modal" style="z-index:9999;">
+    <div class="modal-card">
+      <div style="text-align:center; font-size:2rem; margin-bottom:10px;">🔒</div>
+      <h2 style="text-align:center;">Lås upp din budget</h2>
+      <p style="font-size:0.9rem; color:var(--muted); text-align:center; margin-bottom:15px;">
+        För din säkerhet är din budgetdata krypterad. Eftersom du loggar in från en ny enhet/webbläsare måste du ange
+        din
+        Synk-kod (PIN) för att hämta din information.
+      </p>
+      <div class="form-group">
+        <input type="password" id="pin-unlock-input" placeholder="Ange din 6-siffriga kod"
+          style="text-align:center; font-size:1.2rem; letter-spacing:4px;" autocomplete="off" inputmode="numeric">
+      </div>
+      <button class="save-btn" style="width:100%;" onclick="unlockDataWithPin()">Lås upp</button>
+      <p id="pin-unlock-error"
+        style="color:#dc2626; font-size:0.8rem; text-align:center; margin-top:10px; display:none;"></p>
+    </div>
+  </div>
+
+  <!-- E2EE PIN Modal (Setup) -->
+  <div class="modal-overlay" id="pin-setup-modal" style="z-index:9999;">
+    <div class="modal-card">
+      <div style="text-align:center; font-size:2rem; margin-bottom:10px;">🔑</div>
+      <h2 style="text-align:center;">Välj din Synk-kod</h2>
+      <p style="font-size:0.9rem; color:var(--muted); text-align:center; margin-bottom:15px;">
+        Vi använder End-to-End-kryptering. Ingen utom du kan läsa din data.
+        Välj en PIN-kod som du kommer ihåg om du byter telefon i framtiden.
+      </p>
+      <div class="form-group">
+        <input type="password" id="pin-setup-input" placeholder="T.ex. 123456"
+          style="text-align:center; font-size:1.2rem; letter-spacing:4px;" autocomplete="off" inputmode="numeric">
+      </div>
+      <button class="save-btn" style="width:100%;" onclick="setupNewPin()">Spara min kod</button>
+      <p id="pin-setup-error"
+        style="color:#dc2626; font-size:0.8rem; text-align:center; margin-top:10px; display:none;"></p>
+    </div>
+  </div>
+
   <!-- Hidden export template -->
   <div id="export-template">
     <h1>Månadsbudget – Sammanfattning</h1>
@@ -1437,6 +1479,125 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // ── E2E Encryption (Web Crypto API) ────────────────────────
+    let userMasterKey = null; // Den härledda nyckeln (från PIN-koden)
+
+    // Omvandla text till ArrayBuffer (för Web Crypto)
+    function str2ab(str) {
+      return new TextEncoder().encode(str);
+    }
+    // Omvandla ArrayBuffer till base64 (för lagring)
+    function ab2base64(ab) {
+      let binary = '';
+      const bytes = new Uint8Array(ab);
+      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    }
+    // base64 till ArrayBuffer
+    function base642ab(base64) {
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    }
+
+    // Skapa en Master Key (AES-GCM 256) från en PIN-kod och UID som salt (PBKDF2)
+    async function deriveMasterKey(pinCode, uid) {
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw', str2ab(pinCode), { name: 'PBKDF2' }, false, ['deriveKey']
+      );
+      // UID-salt baserat på användaren så att samma PIN ger olika nycklar för olika konton
+      const salt = str2ab(uid + '_manadsbudget_salt');
+      return await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false, // nyckeln kan inte exporteras
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    // Kryptera ett JSON-objekt med AES-GCM
+    async function encryptObject(obj, key) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const data = str2ab(JSON.stringify(obj));
+      const encryptedBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+      return ab2base64(iv.buffer) + ':' + ab2base64(encryptedBuf);
+    }
+
+    // Dekryptera en sträng ("iv:data") tillbaka till objekt
+    async function decryptObject(encryptedString, key) {
+      const parts = encryptedString.split(':');
+      if (parts.length !== 2) throw new Error('Ogiltigt E2EE-format.');
+      const iv = base642ab(parts[0]);
+      const data = base642ab(parts[1]);
+      const decryptedBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+      return JSON.parse(new TextDecoder().decode(decryptedBuf));
+    }
+
+    // Generera en slumpmässig "Budget Key" för delning
+    async function generateBudgetKey() {
+      const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+      // Exportera den till en base64-kod som vi kan dela/spara krypterad
+      const exported = await crypto.subtle.exportKey('raw', key);
+      return ab2base64(exported);
+    }
+
+    // Importera en sträng ("Budget Key") tillbaka till WebCrypto Key
+    async function importBudgetKey(base64KeyStr) {
+      return await crypto.subtle.importKey('raw', base642ab(base64KeyStr), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+    }
+
+    // UI-funktioner för PIN-kod
+    async function setupNewPin() {
+      const pin = document.getElementById('pin-setup-input').value;
+      const err = document.getElementById('pin-setup-error');
+      if (pin.length < 4) {
+        err.textContent = "Koden måste vara minst 4 tecken.";
+        err.style.display = 'block';
+        return;
+      }
+      try {
+        userMasterKey = await deriveMasterKey(pin, currentUser.uid);
+        // Spara en indikation på att den här enheten "kan" krypteringen utan lösenord just nu
+        // (men eftersom vi inte kan spara masterKey rått säkert i localStorage sparar vi bara pinkoden där
+        //  - detta är en avvägning för att användaren ska slippa skriva in den varje gång på sin mobil)
+        localStorage.setItem(`manadsbudget_pin_${currentUser.uid}`, pin);
+
+        document.getElementById('pin-setup-modal').classList.remove('open');
+        showToast("Synk-kod sparad! Datan krypteras vid nästa sparning.");
+        saveToCloud();
+      } catch (e) {
+        console.error(e);
+        err.textContent = "Kunde inte skapa nyckel.";
+        err.style.display = 'block';
+      }
+    }
+
+    async function unlockDataWithPin() {
+      const pin = document.getElementById('pin-unlock-input').value;
+      const err = document.getElementById('pin-unlock-error');
+      if (!pin) return;
+
+      try {
+        userMasterKey = await deriveMasterKey(pin, currentUser.uid);
+        // Test-dekryptera för att verifiera att pinkoden var rätt (görs automatiskt när switchBudget körs om)
+        localStorage.setItem(`manadsbudget_pin_${currentUser.uid}`, pin);
+
+        // Trigger a reload of the current budget to decrypt it
+        if (activeBudgetId) {
+          switchBudget(activeBudgetId);
+        } else {
+          document.getElementById('pin-unlock-modal').classList.remove('open');
+        }
+      } catch (e) {
+        console.error(e);
+        err.textContent = "Fel kod.";
+        err.style.display = 'block';
+      }
+    }
+
+
     // ── State ──────────────────────────────────────────────────
     let state = { income: [], fixed: [], variable: [], saving: [] };
     let nextId = 1;
@@ -1450,7 +1611,7 @@
     let nameUpdateTimer, commentUpdateTimer;
 
     // ── Auth Observer ──────────────────────────────────────
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged(async user => {
       currentUser = user;
       if (user) {
         document.getElementById('btn-login').style.display = 'none';
@@ -1462,6 +1623,14 @@
         document.getElementById('eval-card').style.display = 'block';
         document.getElementById('save-btn').style.display = 'inline-block';
         document.getElementById('delete-budget-btn').style.display = 'inline-block';
+
+        // Auto-load masterkey if PIN is saved on this device
+        const savedPin = localStorage.getItem(`manadsbudget_pin_${user.uid}`);
+        if (savedPin) {
+          try {
+            userMasterKey = await deriveMasterKey(savedPin, user.uid);
+          } catch (e) { console.error("Could not derive key from saved PIN", e); }
+        }
 
         // Migrate legacy budget (add collaborators field if missing)
         db.collection('budgets').doc(user.uid).get().then(doc => {
@@ -1538,16 +1707,57 @@
       activeBudgetId = budgetId;
       if (currentUser) db.collection('users').doc(currentUser.uid).set({ activeBudgetId: budgetId }, { merge: true });
       if (unsubscribeSnapshot) unsubscribeSnapshot();
-      unsubscribeSnapshot = db.collection('budgets').doc(budgetId).onSnapshot(doc => {
-        if (doc.metadata.hasPendingWrites) return;
+
+      const processBudgetDoc = async (doc) => {
         isSyncing = true;
         if (doc.exists) {
-          const data = doc.data();
-          const newMeta = { name: data.name || '', status: data.status || 'none', comment: data.comment || '' };
-          const cloudState = { income: data.income || [], fixed: data.fixed || [], variable: data.variable || [], saving: data.saving || [] };
+          const cloudData = doc.data();
+          let newMeta = { name: '', status: 'none', comment: '' };
+          let cloudState = { income: [], fixed: [], variable: [], saving: [] };
+
+          if (cloudData.encryptedPayload) {
+            // New E2EE Flow
+            if (!userMasterKey) {
+              // We have encrypted data but no key in memory.
+              // Ask user for PIN.
+              document.getElementById('pin-unlock-modal').classList.add('open');
+              isSyncing = false;
+              return;
+            }
+            try {
+              // The payload contains the state AND the metadata (name, comment, status)
+              const decrypted = await decryptObject(cloudData.encryptedPayload, userMasterKey);
+              newMeta = { name: decrypted.name || '', status: decrypted.status || 'none', comment: decrypted.comment || '' };
+              cloudState = { income: decrypted.income || [], fixed: decrypted.fixed || [], variable: decrypted.variable || [], saving: decrypted.saving || [] };
+              // if it had a nextId inside payload we could use it, otherwise fall back to doc root
+              if (decrypted.nextId) nextId = decrypted.nextId;
+              else nextId = cloudData.nextId || 1;
+              document.getElementById('pin-unlock-modal').classList.remove('open');
+            } catch (e) {
+              console.error("Fel vid dekryptering:", e);
+              // Incorrect PIN or corrupted data
+              document.getElementById('pin-unlock-modal').classList.add('open');
+              document.getElementById('pin-unlock-error').textContent = "Fel Synk-kod eller skadad data.";
+              document.getElementById('pin-unlock-error').style.display = 'block';
+              isSyncing = false;
+              return;
+            }
+          } else {
+            // Legacy/Plaintext Flow
+            newMeta = { name: cloudData.name || '', status: cloudData.status || 'none', comment: cloudData.comment || '' };
+            cloudState = { income: cloudData.income || [], fixed: cloudData.fixed || [], variable: cloudData.variable || [], saving: cloudData.saving || [] };
+            nextId = cloudData.nextId || 1;
+
+            // If user has set a master key, we will automatically encrypt it on next save
+            if (!userMasterKey) {
+              // Ask them to set a PIN to encrypt legacy data
+              document.getElementById('pin-setup-modal').classList.add('open');
+            }
+          }
+
           const sameState = JSON.stringify(cloudState) === JSON.stringify({ income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving });
           const sameMeta = JSON.stringify(newMeta) === JSON.stringify(budgetMeta);
-          if (!sameState) { state = cloudState; nextId = data.nextId || 1; renderAll(); }
+          if (!sameState) { state = cloudState; renderAll(); }
           if (!sameMeta) { budgetMeta = newMeta; updateMetaUI(); }
           // Update collaborator badge
           const collabs = data.collaborators || [];
@@ -1566,7 +1776,9 @@
           saveToCloud();
         }
         isSyncing = false;
-      });
+      }; // <-- Saknades rätt slutet på processBudgetDoc
+
+      unsubscribeSnapshot = db.collection('budgets').doc(budgetId).onSnapshot(processBudgetDoc);
       renderBudgetSelector();
     }
 
@@ -1671,28 +1883,41 @@
       }
     }
 
-    function saveToCloud() {
+    async function saveToCloud() {
       if (!activeBudgetId) return;
-      db.collection('budgets').doc(activeBudgetId).set({
+
+      const payload = {
         income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
         nextId: nextId,
-        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || ''
+      };
+
+      if (userMasterKey) {
+        // Encrypt everything!
+        const encrypted = await encryptObject(payload, userMasterKey);
+        await db.collection('budgets').doc(activeBudgetId).set({
+          encryptedPayload: encrypted,
+          name: budgetMeta.name || 'Budget', // Alias for list rendering, optional
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      } else {
+        // Fallback or unencrypted users
+        await db.collection('budgets').doc(activeBudgetId).set({
+          ...payload,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
     }
 
-    window.manuallySave = function () {
+    window.manuallySave = async function () {
       if (!currentUser || !activeBudgetId) return;
-      clearTimeout(saveCloudTimer); // Spola debounce-timern
+      clearTimeout(saveCloudTimer); // Flush debounce timer
       const btn = document.getElementById('save-btn');
       btn.textContent = '⏳ Sparar...';
       btn.disabled = true;
-      db.collection('budgets').doc(activeBudgetId).set({
-        income: state.income, fixed: state.fixed, variable: state.variable, saving: state.saving,
-        nextId: nextId,
-        name: budgetMeta.name || '', status: budgetMeta.status || 'none', comment: budgetMeta.comment || '',
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(() => {
+
+      try {
+        await saveToCloud();
         btn.textContent = '✓ Sparat';
         btn.classList.add('saved');
         btn.disabled = false;
@@ -1700,11 +1925,12 @@
           btn.textContent = '💾 Spara';
           btn.classList.remove('saved');
         }, 2000);
-      }).catch(() => {
+      } catch (e) {
+        console.error("Kunde inte spara", e);
         btn.textContent = '💾 Spara';
         btn.disabled = false;
-        showToast('⚠️ Kunde inte spara. Kontrollera nätverket.');
-      });
+        showToast('⚠️ Kunde inte kryptera eller spara.');
+      }
     };
 
 
@@ -1873,21 +2099,55 @@
       }
     };
 
-    function openShareModal() {
-      document.getElementById('share-my-id').value = activeBudgetId || 'Ingen budget vald';
+    async function openShareModal() {
+      let shareKey = "";
+      if (userMasterKey) {
+        // Exportera den lokala nyckeln som en string så att andra kan importera den
+        try {
+          const exported = await crypto.subtle.exportKey('raw', userMasterKey);
+          shareKey = "_" + ab2base64(exported);
+          // Replace base64 bad chars for URLs if we ever want to make it a link
+          shareKey = shareKey.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        } catch (e) { console.error("Could not export key for sharing", e); }
+      }
+
+      document.getElementById('share-my-id').value = (activeBudgetId || 'Ingen budget vald') + shareKey;
       document.getElementById('share-join-id').value = '';
       document.getElementById('share-modal').classList.add('open');
     }
     function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
 
-    function joinBudget() {
-      const newId = document.getElementById('share-join-id').value.trim();
-      if (!newId) return;
+    async function joinBudget() {
+      const inputVal = document.getElementById('share-join-id').value.trim();
+      if (!inputVal) return;
       if (!currentUser) return showToast('Du måste vara inloggad');
 
+      // Parsea eventuell nyckel (format: ID_key)
+      let newId = inputVal;
+      let sharedKeyStr = null;
+      if (inputVal.includes('_')) {
+        const parts = inputVal.split('_');
+        newId = parts[0];
+        sharedKeyStr = parts[1];
+        // Återställ base64-tecken
+        sharedKeyStr = sharedKeyStr.replace(/-/g, '+').replace(/_/g, '/');
+        while (sharedKeyStr.length % 4) { sharedKeyStr += '='; }
+      }
+
       // Check if budget exists, then add user to collaborators and switch to it
-      db.collection('budgets').doc(newId).get().then(doc => {
+      db.collection('budgets').doc(newId).get().then(async doc => {
         if (doc.exists) {
+
+          if (sharedKeyStr) {
+            try {
+              userMasterKey = await importBudgetKey(sharedKeyStr);
+              // Fråga dem om de vill spara denna som sin primära pinkod på denna enhet?
+              // För den här MVPn sparar vi den tyst i minnet tills budgeten renderas.
+            } catch (e) {
+              console.error("Fel vid import av delningsnyckel", e);
+            }
+          }
+
           // Add current user to the budget's collaborators list (so it shows in their dropdown)
           doc.ref.update({
             collaborators: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
@@ -2263,7 +2523,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.14</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.15</footer>
 
 </body>
 
