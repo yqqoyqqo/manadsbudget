@@ -690,9 +690,76 @@
       grid-column: 1 / -1;
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 12px;
       padding: 4px 0 16px;
       flex-wrap: wrap;
+    }
+
+    .info-tooltip-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: help;
+    }
+
+    .info-tooltip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .info-tooltip-container:hover .info-tooltip-icon {
+      background: #cbd5e1;
+      color: #1e293b;
+    }
+
+    .info-tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      width: max-content;
+      max-width: 280px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      font-weight: 500;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: opacity 0.2s, visibility 0.2s;
+      pointer-events: none;
+    }
+
+    .info-tooltip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: #1e293b transparent transparent transparent;
+    }
+
+    .info-tooltip-container:hover .info-tooltip-text {
+      visibility: visible;
+      opacity: 1;
     }
 
     .export-btn {
@@ -1290,6 +1357,13 @@
       <button id="save-btn" class="save-btn" onclick="manuallySave()" style="display:none;">💾 Spara</button>
       <button class="export-btn" onclick="exportImage()">📸 Spara som bild</button>
       <button class="export-btn" onclick="document.getElementById('import-file-input').click()">📥 Läs in bild</button>
+      <div class="info-tooltip-container">
+        <div class="info-tooltip-icon">?</div>
+        <div class="info-tooltip-text">
+          Spara en bild för att få en tydlig överblick. Du kan även skicka bilden till någon annan som kan läsa in den i
+          sin app och på så sätt snabbt få exakt samma siffror upplagda framför sig!
+        </div>
+      </div>
       <input type="file" id="import-file-input" accept="image/png" style="display:none;"
         onchange="importFromImage(event)">
       <button id="delete-budget-btn" onclick="openDeleteModal()"
@@ -2935,7 +3009,7 @@
     // ── Service Worker ─────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.23').then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=4.25').then(reg => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -2950,7 +3024,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.24</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.25</footer>
 
 </body>
 
