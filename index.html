@@ -2734,9 +2734,13 @@
 
         if (deficit > variable) {
           tipText += `💡 <em>Tips:</em> Även om du drar in på <strong>alla</strong> rörliga utgifter (${fmt(variable)}) saknas ändå ${fmt(deficit - variable)}. Du måste se över dina fasta utgifter eller öka inkomsterna.`;
+          if (variable > 0) {
+            tipText += `<div style="margin-top:12px;"><button onclick="adjustVariableExpenses()" style="background:#dc2626; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; width:100%;">Sätt alla rörliga utgifter till 0</button></div>`;
+          }
         } else if (variable > 0) {
           const percentReduction = Math.round((deficit / variable) * 100);
           tipText += `💡 <em>Tips:</em> För att få budgeten att gå ihop behöver du i snitt minska dina rörliga utgifter med <strong>${percentReduction}%</strong> (totalt ${fmt(deficit)}).`;
+          tipText += `<div style="margin-top:12px;"><button onclick="adjustVariableExpenses()" style="background:#dc2626; color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:600; cursor:pointer; width:100%;">Justera rörliga utgifter automatiskt</button></div>`;
         } else {
           tipText += `💡 <em>Tips:</em> Du har inga rörliga utgifter att dra in på. Du måste öka inkomsterna eller sänka fasta kostnader.`;
         }
@@ -2769,6 +2773,39 @@
           }
         }
       });
+    }
+
+    function adjustVariableExpenses() {
+      const income = sumSection(state.income);
+      const fixed = sumSection(state.fixed);
+      const variable = sumSection(state.variable);
+      const available = income - fixed - variable;
+
+      if (available >= 0 || variable <= 0) return;
+
+      const deficit = Math.abs(available);
+
+      if (deficit >= variable) {
+        state.variable.forEach(item => { item.amount = 0; });
+      } else {
+        const ratio = (variable - deficit) / variable;
+        let newTotal = 0;
+        state.variable.forEach((item, index) => {
+          let oldVal = parseFloat(item.amount) || 0;
+          if (index === state.variable.length - 1) {
+            item.amount = Math.max(0, Math.round(variable - deficit - newTotal));
+          } else {
+            let newVal = Math.round(oldVal * ratio);
+            item.amount = newVal;
+            newTotal += newVal;
+          }
+        });
+      }
+
+      renderSection('variable');
+      recalc();
+      saveToCloud();
+      showToast('Rörliga utgifter har justerats automatiskt');
     }
 
     // ── New month ─────────────────────────────────────────────────
@@ -3140,7 +3177,7 @@
     // ── Service Worker ─────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.32').then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=4.33').then(reg => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -3155,7 +3192,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.32</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.33</footer>
 
 </body>
 
