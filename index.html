@@ -932,6 +932,85 @@
       border-color: #cbd5e1;
     }
 
+    .modal-card input:focus {
+      border-color: #0369a1;
+      outline: none;
+    }
+
+    /* ====== Nya PIN UI ====== */
+    .pin-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .pin-box {
+      width: 55px;
+      height: 65px;
+      font-size: 2rem;
+      text-align: center;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-weight: bold;
+      color: #1e293b;
+      transition: all 0.2s;
+    }
+
+    .pin-box:focus {
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+      outline: none;
+    }
+
+    /* ======================== */
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .save-btn,
+    .modal-confirm {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .save-btn:active,
+    .modal-confirm:active {
+      transform: translateY(1px);
+    }
+
+    .save-btn.saved {
+      background: #22c55e;
+    }
+
+    .save-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .modal-cancel {
+      background: #f1f5f9;
+      color: var(--text);
+      border: 1px solid #cbd5e1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
 
     #toast {
       position: fixed;
@@ -1392,16 +1471,21 @@
     <div class="modal-card">
       <div style="text-align:center; font-size:2rem; margin-bottom:10px;">🔒</div>
       <h2 style="text-align:center;">Lås upp din budget</h2>
-      <p style="font-size:0.9rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-        För din säkerhet är din budgetdata krypterad. Eftersom du loggar in från en ny enhet/webbläsare måste du ange
-        din
-        Synk-kod (PIN) för att hämta din information.
-      </p>
-      <div class="form-group">
-        <input type="password" id="pin-unlock-input" placeholder="Ange din 6-siffriga kod"
-          style="text-align:center; font-size:1.2rem; letter-spacing:4px;" autocomplete="off" inputmode="numeric">
+      <div style="background:#f8fafc; border:1px solid #e2e6ea; border-radius:8px; padding:12px; margin-bottom:15px;">
+        <p style="font-size:0.85rem; color:var(--muted); text-align:center; margin:0; line-height:1.4;">
+          Din data är krypterad. Din Synk-kod krävs endast nu när du loggar in från en ny enhet/webbläsare för att hämta
+          (synka) din budget till denna enhet.
+        </p>
       </div>
-      <button class="save-btn" style="width:100%;" onclick="unlockDataWithPin()">Lås upp</button>
+
+      <div class="pin-inputs" id="pin-unlock-inputs">
+        <input type="tel" maxlength="1" class="pin-box" autofocus>
+        <input type="tel" maxlength="1" class="pin-box">
+        <input type="tel" maxlength="1" class="pin-box">
+        <input type="tel" maxlength="1" class="pin-box">
+      </div>
+
+      <button class="save-btn" style="width:100%; margin-top:15px;" onclick="unlockDataWithPin()">Lås upp</button>
       <p id="pin-unlock-error"
         style="color:#dc2626; font-size:0.8rem; text-align:center; margin-top:10px; display:none;"></p>
     </div>
@@ -1412,15 +1496,23 @@
     <div class="modal-card">
       <div style="text-align:center; font-size:2rem; margin-bottom:10px;">🔑</div>
       <h2 style="text-align:center;">Välj din Synk-kod</h2>
-      <p style="font-size:0.9rem; color:var(--muted); text-align:center; margin-bottom:15px;">
-        Vi använder End-to-End-kryptering. Ingen utom du kan läsa din data.
-        Välj en PIN-kod som du kommer ihåg om du byter telefon i framtiden.
-      </p>
-      <div class="form-group">
-        <input type="password" id="pin-setup-input" placeholder="T.ex. 123456"
-          style="text-align:center; font-size:1.2rem; letter-spacing:4px;" autocomplete="off" inputmode="numeric">
+
+      <div style="background:#f0fdfa; border:1px solid #ccfbf1; border-radius:8px; padding:12px; margin-bottom:15px;">
+        <p style="font-size:0.85rem; color:#0f766e; text-align:center; margin:0; line-height:1.4;">
+          För din 100% trygghet och anonymitet använder vi End-to-End-kryptering. Välj en kod bestående av <strong>4
+            siffror</strong> som du enkelt kommer ihåg de gånger du vill synka dina budgetar till en annan
+          telefon/enhet.
+        </p>
       </div>
-      <button class="save-btn" style="width:100%;" onclick="setupNewPin()">Spara min kod</button>
+
+      <div class="pin-inputs" id="pin-setup-inputs">
+        <input type="tel" maxlength="1" class="pin-box" autofocus>
+        <input type="tel" maxlength="1" class="pin-box">
+        <input type="tel" maxlength="1" class="pin-box">
+        <input type="tel" maxlength="1" class="pin-box">
+      </div>
+
+      <button class="save-btn" style="width:100%; margin-top:15px;" onclick="setupNewPin()">Spara min kod</button>
       <p id="pin-setup-error"
         style="color:#dc2626; font-size:0.8rem; text-align:center; margin-top:10px; display:none;"></p>
     </div>
@@ -1549,11 +1641,45 @@
     }
 
     // UI-funktioner för PIN-kod
+    function getPinFromInputs(containerId) {
+      const inputs = document.querySelectorAll(`#${containerId} .pin-box`);
+      let pin = '';
+      inputs.forEach(inp => pin += inp.value);
+      return pin;
+    }
+
+    function setupPinAutoTab(containerId, enterCallback) {
+      const inputs = document.querySelectorAll(`#${containerId} .pin-box`);
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+          if (e.target.value.length === 1 && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          } else if (e.target.value.length === 1 && index === inputs.length - 1) {
+            // Om sista rutan är ifylld, tryck automatiskt på enter/knappen
+            if (enterCallback) enterCallback();
+          }
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+            inputs[index - 1].focus();
+          } else if (e.key === 'Enter') {
+            if (enterCallback) enterCallback();
+          }
+        });
+      });
+    }
+
+    // Aktivera auto-hopp för båda modalerna
+    window.addEventListener('DOMContentLoaded', () => {
+      setupPinAutoTab('pin-setup-inputs', setupNewPin);
+      setupPinAutoTab('pin-unlock-inputs', unlockDataWithPin);
+    });
+
     async function setupNewPin() {
-      const pin = document.getElementById('pin-setup-input').value;
+      const pin = getPinFromInputs('pin-setup-inputs');
       const err = document.getElementById('pin-setup-error');
       if (pin.length < 4) {
-        err.textContent = "Koden måste vara minst 4 tecken.";
+        err.textContent = "Koden måste vara 4 siffror.";
         err.style.display = 'block';
         return;
       }
@@ -1565,7 +1691,7 @@
         localStorage.setItem(`manadsbudget_pin_${currentUser.uid}`, pin);
 
         document.getElementById('pin-setup-modal').classList.remove('open');
-        showToast("Synk-kod sparad! Datan krypteras vid nästa sparning.");
+        showToast("Synk-kod sparad! Datan krypteras.");
         saveToCloud();
       } catch (e) {
         console.error(e);
@@ -1575,9 +1701,9 @@
     }
 
     async function unlockDataWithPin() {
-      const pin = document.getElementById('pin-unlock-input').value;
+      const pin = getPinFromInputs('pin-unlock-inputs');
       const err = document.getElementById('pin-unlock-error');
-      if (!pin) return;
+      if (pin.length < 4) return;
 
       try {
         userMasterKey = await deriveMasterKey(pin, currentUser.uid);
@@ -2523,7 +2649,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.15</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.16</footer>
 
 </body>
 
