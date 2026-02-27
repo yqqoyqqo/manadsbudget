@@ -248,12 +248,89 @@
     /* Auth & Share UI */
     .top-bar {
       display: flex;
-      justify-content: flex-end;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 20px;
-      flex-wrap: wrap;
       /* Push below phone status bar – adapts automatically per device */
       padding-top: calc(env(safe-area-inset-top) + 8px);
+    }
+
+    .hamburger-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hamburger-btn {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .hamburger-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .hamburger-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 8px;
+      background: #fff;
+      min-width: 200px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      z-index: 100;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .hamburger-dropdown.open {
+      display: flex;
+    }
+
+    .hamburger-item {
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #334155;
+      text-align: left;
+      background: none;
+      border: none;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s;
+    }
+
+    .hamburger-item:last-child {
+      border-bottom: none;
+    }
+
+    .hamburger-item:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .hamburger-item.primary {
+      color: #0369a1;
+      font-weight: 600;
+    }
+
+    .hamburger-item.danger {
+      color: #dc2626;
     }
 
     .btn-sm {
@@ -1237,20 +1314,31 @@
       <div class="user-info" id="user-info">
         <!-- Fylls i av JS -->
       </div>
-      <button id="btn-install" class="btn-sm" onclick="triggerInstall()" style="display:none;">📲 Installera
-        app</button>
-      <button class="btn-sm" id="btn-login" onclick="openAuthModal()">Logga in</button>
-      <button class="btn-sm primary" id="btn-share" onclick="openShareModal()" style="display:none;">Dela
-        budget</button>
-      <button class="btn-sm" id="btn-profile" onclick="openProfileModal()" style="display:none;">👤 Profil</button>
-      <button class="btn-sm" id="btn-logout" onclick="logout()" style="display:none;">Logga ut</button>
 
-      <!-- Theme Switcher -->
-      <select id="theme-selector" onchange="toggleTheme(this.value)" class="btn-sm"
-        style="cursor:pointer; padding:5px 8px; width:auto;">
-        <option value="standard">🎨 Standard</option>
-        <option value="modern">◼️ Modern</option>
-      </select>
+      <div class="hamburger-menu">
+        <button class="hamburger-btn" onclick="toggleHamburgerMenu()">☰ Meny</button>
+        <div class="hamburger-dropdown" id="hamburger-dropdown">
+          <button id="btn-install" class="hamburger-item" onclick="triggerInstall()" style="display:none;">📲 Installera
+            app</button>
+          <button class="hamburger-item" id="btn-login" onclick="openAuthModal()">Logga in</button>
+          <button class="hamburger-item primary" id="btn-share" onclick="openShareModal()" style="display:none;">Dela
+            budget</button>
+          <button class="hamburger-item" id="btn-profile" onclick="openProfileModal()" style="display:none;">👤
+            Profil</button>
+
+          <div class="hamburger-item" style="cursor:default;">
+            <span style="color:#64748b; font-size:0.85rem;">Tema</span>
+            <select id="theme-selector" onchange="toggleTheme(this.value)"
+              style="padding:4px; font-size:0.9rem; border:1px solid #cbd5e1; border-radius:4px; margin-left:8px;">
+              <option value="standard">🎨 Standard</option>
+              <option value="modern">◼️ Modern</option>
+            </select>
+          </div>
+
+          <button class="hamburger-item danger" id="btn-logout" onclick="logout()" style="display:none;">Logga
+            ut</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3012,6 +3100,18 @@
       localStorage.setItem('app_theme', themeName);
     }
 
+    function toggleHamburgerMenu() {
+      document.getElementById('hamburger-dropdown').classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+      const menu = document.querySelector('.hamburger-menu');
+      if (menu && !menu.contains(event.target)) {
+        document.getElementById('hamburger-dropdown').classList.remove('open');
+      }
+    });
+
     // Apply theme on load
     const savedTheme = localStorage.getItem('app_theme') || 'standard';
     document.getElementById('theme-selector').value = savedTheme;
@@ -3022,7 +3122,7 @@
     // ── Service Worker ─────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.26').then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=4.27').then(reg => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -3037,7 +3137,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.26</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.27</footer>
 
 </body>
 
