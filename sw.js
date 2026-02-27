@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manadsbudget-v8';
+const CACHE_NAME = 'manadsbudget-v4.20';
 
 const ASSETS = [
   './',
