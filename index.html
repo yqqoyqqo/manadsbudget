@@ -805,8 +805,7 @@
       opacity: 0;
       position: absolute;
       bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
+      right: 0;
       background: #1e293b;
       color: #fff;
       text-align: center;
@@ -827,8 +826,7 @@
       content: '';
       position: absolute;
       top: 100%;
-      left: 50%;
-      margin-left: -6px;
+      right: 6px;
       border-width: 6px;
       border-style: solid;
       border-color: #1e293b transparent transparent transparent;
@@ -1291,17 +1289,7 @@
       }
 
       /* Gör så tool-tippen inte hamnar utanför högra skärmkanten */
-      .info-tooltip-text {
-        left: auto;
-        right: 0;
-        transform: none;
-      }
-
-      .info-tooltip-text::after {
-        left: auto;
-        right: 6px;
-        margin-left: 0;
-      }
+      /* These rules are now global, so they are removed from the media query */
     }
   </style>
 </head>
@@ -3122,7 +3110,7 @@
     // ── Service Worker ─────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.30').then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=4.31').then(reg => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -3137,7 +3125,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.30</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.31</footer>
 
 </body>
 
