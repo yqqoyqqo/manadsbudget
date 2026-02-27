@@ -1406,6 +1406,9 @@
         <div class="breakdown-item">− Fasta<span id="bd-fixed">0 kr</span></div>
         <div class="breakdown-item">− Rörliga<span id="bd-variable">0 kr</span></div>
       </div>
+      <div id="balance-info"
+        style="margin-top:20px; padding:16px; border-radius:8px; font-size:0.9rem; font-weight:500; text-align:left; display:none; line-height:1.5;">
+      </div>
     </div>
 
     <!-- SAVINGS -->
@@ -2713,6 +2716,33 @@
       document.getElementById('bd-fixed').textContent = fmt(fixed);
       document.getElementById('bd-variable').textContent = fmt(variable);
 
+      const balanceInfoEl = document.getElementById('balance-info');
+      if (available >= 0) {
+        balanceInfoEl.style.display = 'block';
+        balanceInfoEl.style.backgroundColor = '#f0fdf4';
+        balanceInfoEl.style.color = '#16a34a';
+        balanceInfoEl.style.border = '1px solid #bbf7d0';
+        balanceInfoEl.innerHTML = '<strong>✅ Budgeten går ihop!</strong> Du har täckt alla dina planerade utgifter.';
+      } else {
+        balanceInfoEl.style.display = 'block';
+        balanceInfoEl.style.backgroundColor = '#fef2f2';
+        balanceInfoEl.style.color = '#dc2626';
+        balanceInfoEl.style.border = '1px solid #fecaca';
+
+        const deficit = Math.abs(available);
+        let tipText = `<strong>⚠️ Budgeten går inte ihop.</strong> Det saknas ${fmt(deficit)}.<br><br>`;
+
+        if (deficit > variable) {
+          tipText += `💡 <em>Tips:</em> Även om du drar in på <strong>alla</strong> rörliga utgifter (${fmt(variable)}) saknas ändå ${fmt(deficit - variable)}. Du måste se över dina fasta utgifter eller öka inkomsterna.`;
+        } else if (variable > 0) {
+          const percentReduction = Math.round((deficit / variable) * 100);
+          tipText += `💡 <em>Tips:</em> För att få budgeten att gå ihop behöver du i snitt minska dina rörliga utgifter med <strong>${percentReduction}%</strong> (totalt ${fmt(deficit)}).`;
+        } else {
+          tipText += `💡 <em>Tips:</em> Du har inga rörliga utgifter att dra in på. Du måste öka inkomsterna eller sänka fasta kostnader.`;
+        }
+        balanceInfoEl.innerHTML = tipText;
+      }
+
       let savingTotal = 0;
       state.saving.forEach(item => { savingTotal += calcSaving(item, available_pos); });
       document.getElementById('saving-total').textContent = fmt(savingTotal);
@@ -3110,7 +3140,7 @@
     // ── Service Worker ─────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.31').then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=4.32').then(reg => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -3125,7 +3155,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.31</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.32</footer>
 
 </body>
 
