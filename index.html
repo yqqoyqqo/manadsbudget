@@ -1856,7 +1856,7 @@
     <div id="exp-unallocated-section"
       style="margin-top:18px; padding-top:14px; border-top:2px solid #e2e6ea; display:flex; justify-content:space-between; align-items:center;">
       <span
-        style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:#6b7280; font-weight:600;">Ofördelat
+        style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:#ca8a04; font-weight:700;">Guldkant/Ofördelat
         kvar</span>
       <span id="exp-unallocated-amount" style="font-size:1.1rem; font-weight:700;"></span>
     </div>
@@ -2733,7 +2733,7 @@
       const unallocEl = document.getElementById('saving-unallocated');
       const warnEl = document.getElementById('saving-warning');
 
-      if (available_pos > 0) unallocEl.innerHTML = `Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong>`;
+      if (available_pos > 0) unallocEl.innerHTML = `<span style="color:#ca8a04;">Guldkant/Ofördelat: <strong>${fmt(Math.max(0, unalloc))}</strong></span>`;
       else unallocEl.innerHTML = '';
 
       if (savingTotal > available_pos && available_pos > 0) warnEl.classList.add('over');
@@ -2881,7 +2881,7 @@
       const unalloc = Math.max(0, available_pos - savTotal);
       const unallocEl = document.getElementById('exp-unallocated-amount');
       unallocEl.textContent = fmt(unalloc);
-      unallocEl.style.color = unalloc > 0 ? '#16a34a' : '#6b7280';
+      unallocEl.style.color = unalloc > 0 ? '#ca8a04' : '#6b7280';
       document.getElementById('exp-unallocated-section').style.display = state.saving.length > 0 ? 'flex' : 'none';
 
       const tpl = document.getElementById('export-template');
@@ -3122,7 +3122,7 @@
     // ── Service Worker ─────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=4.27').then(reg => {
+        navigator.serviceWorker.register('./sw.js?v=4.28').then(reg => {
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker.addEventListener('statechange', () => {
@@ -3137,7 +3137,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.27</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.28</footer>
 
 </body>
 
