@@ -1286,7 +1286,7 @@
 
     <!-- EXPORT / NEW MONTH -->
     <div class="export-area full">
-      <button class="newmonth-btn" onclick="openNewMonthModal()">📅 Ny månad</button>
+      <button class="newmonth-btn" onclick="openNewMonthModal()">📅 Ny budget</button>
       <button id="save-btn" class="save-btn" onclick="manuallySave()" style="display:none;">💾 Spara</button>
       <button class="export-btn" onclick="exportImage()">📸 Spara som bild</button>
       <button class="export-btn" onclick="document.getElementById('import-file-input').click()">📥 Läs in bild</button>
@@ -1459,7 +1459,7 @@
   <!-- New month confirmation modal -->
   <div class="modal-overlay" id="newmonth-modal">
     <div class="modal-box" style="max-width:480px;">
-      <h3>📅 Starta ny månad?</h3>
+      <h3>📅 Starta ny budget?</h3>
       <p style="margin-bottom:16px;">Välj vilka poster som ska föras vidare till nästa budget. Inkomster och sparande
         rensas alltid.</p>
 
@@ -2654,7 +2654,7 @@
         const name = now.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' });
         budgetMeta = { name: name.charAt(0).toUpperCase() + name.slice(1), status: 'none', comment: '' };
         renderAll(); updateMetaUI(); saveState(); updateDateDisplay();
-        showToast('✅ Ny månad startad!');
+        showToast('✅ Ny budget startad!');
       }
     }
 
@@ -2950,7 +2950,7 @@
       });
     }
   </script>
-  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.23</footer>
+  <footer class="site-footer">Skapad av Jim Brahn 2026 &nbsp;&middot;&nbsp; v4.24</footer>
 
 </body>
 
